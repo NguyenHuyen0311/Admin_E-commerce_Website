@@ -38,10 +38,12 @@ const Sidebar = () => {
 
       <ul className="list-none flex flex-col">
         <li>
-          <Button className="w-full !py-2 !capitalize hover:bg-[#f1f1f1] !font-[600] flex !items-center gap-3 !text-black/70 !justify-start">
-            <RxDashboard className="!text-[20px]" />
-            <span className="!text-[14px]">Tổng quan</span>
-          </Button>
+          <Link to="/">
+            <Button className="w-full !py-2 !capitalize hover:bg-[#f1f1f1] !font-[600] flex !items-center gap-3 !text-black/70 !justify-start">
+              <RxDashboard className="!text-[20px]" />
+              <span className="!text-[14px]">Tổng quan</span>
+            </Button>
+          </Link>
         </li>
 
         <li>
@@ -66,16 +68,20 @@ const Sidebar = () => {
           >
             <ul className="w-full">
               <li className="w-full">
-                <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
-                  <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
-                  Danh sách ảnh quảng cáo lớn
-                </Button>
+                <Link to="/banners">
+                  <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
+                    <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
+                    Danh sách ảnh quảng cáo
+                  </Button>
+                </Link>
               </li>
               <li className="w-full">
-                <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
-                  <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
-                  Thêm ảnh quảng cáo lớn
-                </Button>
+                <Link to="/banner/add">
+                  <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
+                    <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
+                    Thêm ảnh quảng cáo
+                  </Button>
+                </Link>
               </li>
             </ul>
           </Collapse>
@@ -103,28 +109,36 @@ const Sidebar = () => {
           >
             <ul className="w-full">
               <li className="w-full">
-                <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
-                  <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
-                  Danh sách danh mục cấp 1
-                </Button>
+                <Link to="/categories">
+                  <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
+                    <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
+                    Danh sách danh mục cấp 1
+                  </Button>
+                </Link>
               </li>
               <li className="w-full">
-                <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
-                  <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
-                  Thêm danh mục cấp 1
-                </Button>
+                <Link to="/categories/add">
+                  <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
+                    <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
+                    Thêm danh mục cấp 1
+                  </Button>
+                </Link>
               </li>
               <li className="w-full">
+              <Link to="/category/sub-category">
                 <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
                   <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
                   Danh sách danh mục cấp 2
                 </Button>
+                </Link>
               </li>
               <li className="w-full">
+              <Link to="/category/sub-category/add">
                 <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
                   <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
                   Thêm danh mục cấp 2
                 </Button>
+                </Link>
               </li>
             </ul>
           </Collapse>
@@ -152,33 +166,41 @@ const Sidebar = () => {
           >
             <ul className="w-full">
               <li className="w-full">
+              <Link to="/products">
                 <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
                   <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
                   Danh sách sản phẩm
                 </Button>
+                </Link>
               </li>
               <li className="w-full">
+              <Link to="/product/add">
                 <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
                   <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
                   Thêm sản phẩm
                 </Button>
+                </Link>
               </li>
             </ul>
           </Collapse>
         </li>
 
         <li>
-          <Button className="w-full !py-2 !capitalize hover:bg-[#f1f1f1] !font-[600] flex !items-center gap-3 !text-black/70 !justify-start">
-            <TbUsersGroup className="!text-[20px]" />
-            <span className="!text-[14px]">Người dùng</span>
-          </Button>
+          <Link to="/users">
+            <Button className="w-full !py-2 !capitalize hover:bg-[#f1f1f1] !font-[600] flex !items-center gap-3 !text-black/70 !justify-start">
+              <TbUsersGroup className="!text-[20px]" />
+              <span className="!text-[14px]">Người dùng</span>
+            </Button>
+          </Link>
         </li>
 
         <li>
-          <Button className="w-full !py-2 !capitalize hover:bg-[#f1f1f1] !font-[600] flex !items-center gap-3 !text-black/70 !justify-start">
-            <IoBagCheckOutline className="!text-[20px]" />
-            <span className="!text-[14px]">Đơn hàng</span>
-          </Button>
+          <Link to="/orders">
+            <Button className="w-full !py-2 !capitalize hover:bg-[#f1f1f1] !font-[600] flex !items-center gap-3 !text-black/70 !justify-start">
+              <IoBagCheckOutline className="!text-[20px]" />
+              <span className="!text-[14px]">Đơn hàng</span>
+            </Button>
+          </Link>
         </li>
 
         <li>
@@ -203,33 +225,41 @@ const Sidebar = () => {
           >
             <ul className="w-full">
               <li className="w-full">
+              <Link to="/blogs">
                 <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
                   <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
                   Danh sách bài viết
                 </Button>
+                </Link>
               </li>
               <li className="w-full">
+                <Link to="/blog/add">
                 <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
                   <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
                   Thêm bài viết
                 </Button>
+                </Link>
               </li>
             </ul>
           </Collapse>
         </li>
 
         <li>
-          <Button className="w-full !py-2 !capitalize hover:bg-[#f1f1f1] !font-[600] flex !items-center gap-3 !text-black/70 !justify-start">
-            <RiEdgeNewFill className="!text-[20px]" />
-            <span className="!text-[14px]">Logo</span>
-          </Button>
+          <Link to="/logo">
+            <Button className="w-full !py-2 !capitalize hover:bg-[#f1f1f1] !font-[600] flex !items-center gap-3 !text-black/70 !justify-start">
+              <RiEdgeNewFill className="!text-[20px]" />
+              <span className="!text-[14px]">Logo</span>
+            </Button>
+          </Link>
         </li>
 
         <li>
-          <Button className="w-full !py-2 !capitalize hover:bg-[#f1f1f1] !font-[600] flex !items-center gap-3 !text-black/70 !justify-start">
-            <IoMdLogOut className="!text-[20px]" />
-            <span className="!text-[14px]">Đăng xuất</span>
-          </Button>
+          <Link to="/logout">
+            <Button className="w-full !py-2 !capitalize hover:bg-[#f1f1f1] !font-[600] flex !items-center gap-3 !text-black/70 !justify-start">
+              <IoMdLogOut className="!text-[20px]" />
+              <span className="!text-[14px]">Đăng xuất</span>
+            </Button>
+          </Link>
         </li>
       </ul>
     </div>
