@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, PureComponent } from "react";
 import DashboardBoxes from "../../components/DashboardBoxes";
 import { FaPlus } from "react-icons/fa6";
 import { FaAngleDown } from "react-icons/fa6";
@@ -15,14 +15,25 @@ import {
   MenuItem,
   Checkbox,
   Rating,
-  Tooltip,
 } from "@mui/material";
+import TooltipMUI from "@mui/material/Tooltip";
 import Pagination from "@mui/material/Pagination";
 import TablePagination from "@mui/material/TablePagination";
 import Badge from "../../components/Badge";
 import Button from "@mui/material/Button";
 import { IoEye, IoPencil, IoSearch, IoTrash } from "react-icons/io5";
 import { myContext } from "../../App";
+
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -35,6 +46,81 @@ const Dashboard = () => {
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [categoryL1Fil, setCategoryL1Fil] = useState("");
+  const [chart1Data, setChart1Data] = useState([
+    {
+      name: "Tháng 1",
+      users: 4000,
+      sales: 2400,
+      amt: 2400,
+    },
+    {
+      name: "Tháng 2",
+      users: 3000,
+      sales: 1398,
+      amt: 2210,
+    },
+    {
+      name: "Tháng 3",
+      users: 2000,
+      sales: 9800,
+      amt: 2290,
+    },
+    {
+      name: "Tháng 4",
+      users: 2780,
+      sales: 3908,
+      amt: 2000,
+    },
+    {
+      name: "Tháng 5",
+      users: 1890,
+      sales: 4800,
+      amt: 2181,
+    },
+    {
+      name: "Tháng 6",
+      users: 2390,
+      sales: 3800,
+      amt: 2500,
+    },
+    {
+      name: "Tháng 7",
+      users: 3490,
+      sales: 4600,
+      amt: 2100,
+    },
+    {
+      name: "Tháng 8",
+      users: 3490,
+      sales: 900,
+      amt: 2100,
+    },
+    {
+      name: "Tháng 9",
+      users: 3490,
+      sales: 2300,
+      amt: 2100,
+    },
+    {
+      name: "Tháng 10",
+      users: 2490,
+      sales: 1300,
+      amt: 2100,
+    },
+    {
+      name: "Tháng 11",
+      users: 1490,
+      sales: 400,
+      amt: 2100,
+    },
+    {
+      name: "Tháng 12",
+      users: 6490,
+      sales: 300,
+      amt: 2100,
+    },
+  ]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -44,8 +130,6 @@ const Dashboard = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
-  const [categoryL1Fil, setCategoryL1Fil] = useState("");
 
   const handleChangeCategoryL1Fil = (event) => {
     setCategoryL1Fil(event.target.value);
@@ -102,9 +186,7 @@ const Dashboard = () => {
                 size="small"
                 className="rounded !h-[32px]"
               >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
+                <MenuItem value="">Không</MenuItem>
                 <MenuItem value={10}>Đồ ăn nhẹ</MenuItem>
                 <MenuItem value={20}>Đồ mặn</MenuItem>
                 <MenuItem value={30}>Đồ khỏe mạnh</MenuItem>
@@ -123,9 +205,7 @@ const Dashboard = () => {
                 size="small"
                 className="rounded !h-[32px]"
               >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
+                <MenuItem value="">Không</MenuItem>
                 <MenuItem value={10}>Đồ ăn nhẹ</MenuItem>
                 <MenuItem value={20}>Đồ mặn</MenuItem>
                 <MenuItem value={30}>Đồ khỏe mạnh</MenuItem>
@@ -144,9 +224,7 @@ const Dashboard = () => {
                 size="small"
                 className="rounded !h-[32px]"
               >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
+                <MenuItem value="">Không</MenuItem>
                 <MenuItem value={10}>Đồ ăn nhẹ</MenuItem>
                 <MenuItem value={20}>Đồ mặn</MenuItem>
                 <MenuItem value={30}>Đồ khỏe mạnh</MenuItem>
@@ -257,30 +335,30 @@ const Dashboard = () => {
                   </TableCell>
                   <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <Tooltip title="Sửa">
+                      <TooltipMUI title="Sửa">
                         <Button
                           style={{ minWidth: "35px" }}
                           className="!w-[35px] !h-[35px] flex items-center justify-center !min-w-[35px] !rounded-full hover:!bg-[#f1f1f1]"
                         >
                           <IoPencil className="text-black/60 !text-[20px]" />
                         </Button>
-                      </Tooltip>
-                      <Tooltip title="Xem">
+                      </TooltipMUI>
+                      <TooltipMUI title="Xem">
                         <Button
                           style={{ minWidth: "35px" }}
                           className="!w-[35px] !h-[35px] flex items-center justify-center !min-w-[35px] !rounded-full hover:!bg-[#f1f1f1]"
                         >
                           <IoEye className="text-black/60 !text-[20px]" />
                         </Button>
-                      </Tooltip>
-                      <Tooltip title="Xóa">
+                      </TooltipMUI>
+                      <TooltipMUI title="Xóa">
                         <Button
                           style={{ minWidth: "35px" }}
                           className="!w-[35px] !h-[35px] flex items-center justify-center !min-w-[35px] !rounded-full hover:!bg-[#f1f1f1]"
                         >
                           <IoTrash className="text-black/60 !text-[20px]" />
                         </Button>
-                      </Tooltip>
+                      </TooltipMUI>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -498,6 +576,43 @@ const Dashboard = () => {
               </TableBody>
             </Table>
           </TableContainer>
+        </div>
+
+        <div className="card my-5 pr-3 w-full h-[400px] bg-[#fff] py-5 pb-20 rounded-md shadow-md">
+          <h2 className="text-[16px] px-5 mb-3 font-[600] w-[70%]">Thống kê tổng tiền và người dùng</h2>
+
+          <div className="flex items-center gap-3 px-5 mb-5">
+            <span className="flex items-center gap-2 cursor-pointer"><span className="block w-[10px] h-[10px] rounded-full bg-green-600"></span>Tổng số người dùng</span>
+            <span className="flex items-center gap-2 cursor-pointer"><span className="block w-[10px] h-[10px] rounded-full bg-blue-600"></span>Tổng số tiền</span>
+          </div>
+          
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              width={500}
+              height={300}
+              data={chart1Data}
+              margin={{
+                top: 5,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid stroke="none" strokeDasharray="3 3" />
+              <XAxis tick={{ fontSize: 13 }} dataKey="name" />
+              <YAxis tick={{ fontSize: 13 }} />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="users"
+                stroke="#8884d8"
+                strokeWidth={2}
+                activeDot={{ r: 7 }}
+              />
+              <Line type="monotone" activeDot={{ r: 7 }} strokeWidth={2} dataKey="sales" stroke="#82ca9d" />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </>
