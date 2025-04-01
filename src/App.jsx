@@ -3,8 +3,13 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
+import { createContext, useState } from "react";
+
+const myContext = createContext();
 
 function App() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  
   const router = createBrowserRouter([
     {
       path: "/",
@@ -14,12 +19,8 @@ function App() {
           <section className="main">
             <Header />
             <div className="content-main flex">
-              <div className="sidebar-wrap w-[20%]">
                 <Sidebar />
-              </div>
-              <div className="content-wrap w-[80%] py-4 px-5">
                 <Dashboard />
-              </div>
             </div>
           </section>
         </>
@@ -27,11 +28,18 @@ function App() {
     },
   ]);
 
+  const values = {
+    isSidebarOpen,
+    setIsSidebarOpen,
+  };
+
   return (
-    <>
+    <myContext.Provider value={values}>
       <RouterProvider router={router} />
-    </>
+    </myContext.Provider>
   );
 }
 
 export default App;
+
+export { myContext };

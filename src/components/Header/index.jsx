@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Button from "@mui/material/Button";
 import { IoIosMenu } from "react-icons/io";
 import Badge from "@mui/material/Badge";
@@ -10,6 +10,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import { IoIosLogOut } from "react-icons/io";
 import { FaRegUser } from "react-icons/fa";
+import { myContext } from "../../App";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -20,7 +21,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
-const Header = () => {
+const Header = (toggleSidebar) => {
   const [anchorMyAccountAdmin, setAnchorMyAccountAdmin] = useState(null);
   const openMyAccountAdmin = Boolean(anchorMyAccountAdmin);
   const handleClickMyAccountAdmin = (event) => {
@@ -30,12 +31,12 @@ const Header = () => {
     setAnchorMyAccountAdmin(null);
   };
 
+  const context = useContext(myContext);
+
   return (
-    <header className="w-full h-auto py-2 shadow-md pr-10 bg-[#fff] flex items-center justify-between">
-      <div className="w-[20%]"></div>
-      
+    <header className={`h-auto fixed top-0 right-0 z-[999] py-2 w-full shadow-md pr-10 bg-[#fff] flex items-center justify-between ${context.isSidebarOpen === true ? 'pl-[20%]' : 'pl-0]'}`}>
       <div className="part1 pl-8 w-[40%]">
-        <Button className="!w-[40px] !h-[40px] !rounded-full !text-black/90 !min-w-[40px]">
+        <Button onClick={() => context.setIsSidebarOpen(!context.isSidebarOpen)} className="!w-[40px] !h-[40px] !rounded-full !text-black/90 !min-w-[40px]">
           <IoIosMenu className="!text-[22px]" />
         </Button>
       </div>

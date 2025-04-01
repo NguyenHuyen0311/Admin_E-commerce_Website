@@ -50,3 +50,11 @@ body {
   background: #f14545 !important;
 }
 /* End Button */
+
+.MuiCheckbox-root {
+  padding: 7px !important;
+}
+
+.MuiCheckbox-root.Mui-checked {
+  color: #ff5252 !important;
+}
