@@ -140,7 +140,7 @@ const Dashboard = () => {
   return (
     <>
       <div
-        className={`content-wrap ${
+        className={`content-wrap bg-[#f1f1f1] ${
           context.isSidebarOpen === true ? "w-[80%] ml-auto" : "w-[100%]"
         } transition-all py-4 px-5`}
       >
