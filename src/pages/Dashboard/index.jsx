@@ -1,4 +1,4 @@
-import React, { useContext, useState, PureComponent } from "react";
+import React, { useContext, useState } from "react";
 import DashboardBoxes from "../../components/DashboardBoxes";
 import { FaPlus } from "react-icons/fa6";
 import { FaAngleDown } from "react-icons/fa6";
@@ -154,7 +154,10 @@ const Dashboard = () => {
               Dưới đây là tình hình cửa hàng của bạn hôm nay! Xem ngay thống kê
               chi tiết.
             </p>
-            <Button className="btn-primary transition-all !mt-5 flex gap-1 !items-center">
+            <Button onClick={() => context.setIsOpenFullScreenPanel({
+                  open: true,
+                  model: "Thêm Sản Phẩm"
+                })} className="btn-primary transition-all !mt-5 flex gap-1 !items-center">
               <FaPlus className="text-[20px]" />
               <span>Thêm sản phẩm</span>
             </Button>
@@ -168,7 +171,10 @@ const Dashboard = () => {
         <div className="card my-5 bg-[#fff] py-5 rounded-md shadow-md">
           <div className="w-full px-5 flex justify-between mb-3 items-center">
             <h2 className="text-[18px] font-bold">Sản phẩm</h2>
-            <Button className="btn-primary">Thêm sản phẩm</Button>
+            <Button onClick={() => context.setIsOpenFullScreenPanel({
+                  open: true,
+                  model: "Thêm Sản Phẩm"
+                })} className="btn-primary">Thêm sản phẩm</Button>
           </div>
 
           <div className="w-full px-5 flex items-end justify-between gap-4 mb-6">

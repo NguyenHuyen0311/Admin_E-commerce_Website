@@ -177,12 +177,13 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li className="w-full">
-              <Link to="/product/add">
-                <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
+                <Button onClick={() => context.setIsOpenFullScreenPanel({
+                  open: true,
+                  model: "Thêm Sản Phẩm"
+                })} className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
                   <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
                   Thêm sản phẩm
                 </Button>
-                </Link>
               </li>
             </ul>
           </Collapse>
