@@ -29,7 +29,11 @@ const Sidebar = () => {
   const context = useContext(myContext);
 
   return (
-    <div className={`sidebar z-[999] px-4 fixed top-0 left-0 bg-[#fff] border-r h-full  ${context.isSidebarOpen === true ? 'w-[20%]' : '!hidden'} transition-all`}>
+    <div
+      className={`sidebar z-[999] px-4 fixed top-0 left-0 bg-[#fff] border-r h-full  ${
+        context.isSidebarOpen === true ? "w-[20%]" : "!hidden"
+      } transition-all`}
+    >
       <div className="logo w-full flex justify-start ">
         <Link to="/">
           <img
@@ -79,12 +83,18 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li className="w-full">
-                <Link to="/banner/add">
-                  <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
-                    <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
-                    Thêm ảnh quảng cáo
-                  </Button>
-                </Link>
+                <Button
+                  onClick={() =>
+                    context.setIsOpenFullScreenPanel({
+                      open: true,
+                      model: "Thêm Ảnh Quảng Cáo",
+                    })
+                  }
+                  className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case "
+                >
+                  <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
+                  Thêm ảnh quảng cáo
+                </Button>
               </li>
             </ul>
           </Collapse>
@@ -115,33 +125,39 @@ const Sidebar = () => {
                 <Link to="/categories">
                   <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
                     <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
-                    Danh sách danh mục cấp 1
+                    Danh sách danh mục cha
                   </Button>
                 </Link>
               </li>
               <li className="w-full">
-                <Link to="/categories/add">
+                  <Button onClick={() =>
+                context.setIsOpenFullScreenPanel({
+                  open: true,
+                  model: "Thêm Danh Mục Cha",
+                })
+              } className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
+                    <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
+                    Thêm danh mục cha
+                  </Button>
+              </li>
+              <li className="w-full">
+                <Link to="/sub-category">
                   <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
                     <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
-                    Thêm danh mục cấp 1
+                    Danh sách danh mục con
                   </Button>
                 </Link>
               </li>
               <li className="w-full">
-              <Link to="/category/sub-category">
-                <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
-                  <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
-                  Danh sách danh mục cấp 2
-                </Button>
-                </Link>
-              </li>
-              <li className="w-full">
-              <Link to="/category/sub-category/add">
-                <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
-                  <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
-                  Thêm danh mục cấp 2
-                </Button>
-                </Link>
+                  <Button onClick={() =>
+                context.setIsOpenFullScreenPanel({
+                  open: true,
+                  model: "Thêm Danh Mục Con",
+                })
+              } className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
+                    <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
+                    Thêm danh mục con
+                  </Button>
               </li>
             </ul>
           </Collapse>
@@ -169,18 +185,23 @@ const Sidebar = () => {
           >
             <ul className="w-full">
               <li className="w-full">
-              <Link to="/products">
-                <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
-                  <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
-                  Danh sách sản phẩm
-                </Button>
+                <Link to="/products">
+                  <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
+                    <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
+                    Danh sách sản phẩm
+                  </Button>
                 </Link>
               </li>
               <li className="w-full">
-                <Button onClick={() => context.setIsOpenFullScreenPanel({
-                  open: true,
-                  model: "Thêm Sản Phẩm"
-                })} className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
+                <Button
+                  onClick={() =>
+                    context.setIsOpenFullScreenPanel({
+                      open: true,
+                      model: "Thêm Sản Phẩm",
+                    })
+                  }
+                  className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case "
+                >
                   <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
                   Thêm sản phẩm
                 </Button>
@@ -229,19 +250,19 @@ const Sidebar = () => {
           >
             <ul className="w-full">
               <li className="w-full">
-              <Link to="/blogs">
-                <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
-                  <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
-                  Danh sách bài viết
-                </Button>
+                <Link to="/blogs">
+                  <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
+                    <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
+                    Danh sách bài viết
+                  </Button>
                 </Link>
               </li>
               <li className="w-full">
                 <Link to="/blog/add">
-                <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
-                  <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
-                  Thêm bài viết
-                </Button>
+                  <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
+                    <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
+                    Thêm bài viết
+                  </Button>
                 </Link>
               </li>
             </ul>

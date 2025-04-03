@@ -19,6 +19,14 @@ import { IoMdClose } from "react-icons/io";
 import Slide from "@mui/material/Slide";
 import { Button } from "@mui/material";
 import AddProduct from "./pages/Products/addProduct";
+import HomeSliderBanners from "./pages/HomeSliderBanners";
+import AddHomeSliderBanners from "./pages/HomeSliderBanners/addHomeSliderBanners";
+import Categories from "./pages/Categories";
+import AddCategory from "./pages/Categories/addCategory";
+import SubCategory from "./pages/Categories/subCategory";
+import AddSubCategory from "./pages/Categories/addSubCategory";
+import Users from "./pages/Users";
+import Orders from "./pages/Orders";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -101,6 +109,81 @@ function App() {
         </>
       ),
     },
+    {
+      path: "/banners",
+      exact: true,
+      element: (
+        <>
+          <section className="main">
+            <Header />
+            <div className="content-main flex">
+              <Sidebar />
+              <HomeSliderBanners />
+            </div>
+          </section>
+        </>
+      ),
+    },
+    {
+      path: "/categories",
+      exact: true,
+      element: (
+        <>
+          <section className="main">
+            <Header />
+            <div className="content-main flex">
+              <Sidebar />
+              <Categories />
+            </div>
+          </section>
+        </>
+      ),
+    },
+    {
+      path: "/sub-category",
+      exact: true,
+      element: (
+        <>
+          <section className="main">
+            <Header />
+            <div className="content-main flex">
+              <Sidebar />
+              <SubCategory />
+            </div>
+          </section>
+        </>
+      ),
+    },
+    {
+      path: "/users",
+      exact: true,
+      element: (
+        <>
+          <section className="main">
+            <Header />
+            <div className="content-main flex">
+              <Sidebar />
+              <Users />
+            </div>
+          </section>
+        </>
+      ),
+    },
+    {
+      path: "/orders",
+      exact: true,
+      element: (
+        <>
+          <section className="main">
+            <Header />
+            <div className="content-main flex">
+              <Sidebar />
+              <Orders />
+            </div>
+          </section>
+        </>
+      ),
+    },
   ]);
 
   const values = {
@@ -139,15 +222,13 @@ function App() {
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
               {isOpenFullScreenPanel.model}
             </Typography>
-            <Button autoFocus color="inherit" onClick={() => setIsOpenFullScreenPanel({
-                open: false
-              })}>
-              save
-            </Button>
           </Toolbar>
         </AppBar>
         
         {isOpenFullScreenPanel.model === "Thêm Sản Phẩm" && <AddProduct />}
+        {isOpenFullScreenPanel.model === "Thêm Ảnh Quảng Cáo" && <AddHomeSliderBanners />}
+        {isOpenFullScreenPanel.model === "Thêm Danh Mục Cha" && <AddCategory />}
+        {isOpenFullScreenPanel.model === "Thêm Danh Mục Con" && <AddSubCategory />}
       </Dialog>
     </myContext.Provider>
   );

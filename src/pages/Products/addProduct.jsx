@@ -285,7 +285,7 @@ const AddProduct = () => {
                       style: { transitionDelay: "1s" },
                     }}
                     src={
-                      "https://www.onicifood.com/cdn/shop/files/BANHMIX3.png?v=1736931060&width=750"
+                      ""
                     }
                   />
                 </div>

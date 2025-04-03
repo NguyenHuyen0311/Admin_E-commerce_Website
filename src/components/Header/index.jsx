@@ -11,6 +11,7 @@ import Divider from "@mui/material/Divider";
 import { IoIosLogOut } from "react-icons/io";
 import { FaRegUser } from "react-icons/fa";
 import { myContext } from "../../App";
+import { Link } from "react-router";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -144,7 +145,9 @@ const Header = (toggleSidebar) => {
           </>
         ) : (
           <>
+          <Link to="/login">
             <Button className="btn-primary !h-[33px] !rounded-full">Đăng nhập</Button>
+          </Link>
           </>
         )}
 
