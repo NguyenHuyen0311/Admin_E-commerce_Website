@@ -11,7 +11,8 @@ import Divider from "@mui/material/Divider";
 import { IoIosLogOut } from "react-icons/io";
 import { FaRegUser } from "react-icons/fa";
 import { myContext } from "../../App";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { fetchDataFromApi } from "../../utils/api";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -33,6 +34,25 @@ const Header = (toggleSidebar) => {
   };
 
   const context = useContext(myContext);
+  const history = useNavigate();
+
+  const logout = () => {
+    setAnchorMyAccountAdmin(null);
+
+    fetchDataFromApi(
+      `/api/user/logout?token=${localStorage.getItem("accessToken")}`,
+      { withCredentials: true }
+    ).then((res) => {
+      if (res?.error === false) {
+        context.setIsLogin(false);
+
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+
+        history("/login");
+      }
+    });
+  };
 
   return (
     <header
@@ -117,10 +137,10 @@ const Header = (toggleSidebar) => {
 
                     <div className="info">
                       <h3 className="text-[14px] text-black/80 font-[600]">
-                        Huyền Nguyễn
+                        {context?.userData?.name}
                       </h3>
                       <p className="text-[13px] font-[400] text-black/80">
-                        huyenmeroria@gmail.com
+                        {context?.userData?.email}
                       </p>
                     </div>
                   </div>
@@ -133,10 +153,7 @@ const Header = (toggleSidebar) => {
                   <FaRegUser className="text-[15px] text-black/70" />
                   <span className="text-[14px] font-[500]">Tài khoản</span>
                 </MenuItem>
-                <MenuItem
-                  onClick={handleCloseMyAccountAdmin}
-                  className="!flex items-center gap-2"
-                >
+                <MenuItem onClick={logout} className="!flex items-center gap-2">
                   <IoIosLogOut className="text-[17px]" />
                   <span className="text-[14px] font-[500]">Đăng xuất</span>
                 </MenuItem>
@@ -145,12 +162,13 @@ const Header = (toggleSidebar) => {
           </>
         ) : (
           <>
-          <Link to="/login">
-            <Button className="btn-primary !h-[33px] !rounded-full">Đăng nhập</Button>
-          </Link>
+            <Link to="/login">
+              <Button className="btn-primary !h-[33px] !rounded-full">
+                Đăng nhập
+              </Button>
+            </Link>
           </>
         )}
-
       </div>
     </header>
   );

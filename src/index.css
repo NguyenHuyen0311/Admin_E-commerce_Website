@@ -85,3 +85,8 @@ body {
 .MuiCheckbox-root.Mui-checked {
   color: #ff5252 !important;
 }
+
+button .MuiCircularProgress-root {
+  width: 30px !important;
+  height: 30px !important; 
+}

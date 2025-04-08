@@ -10,14 +10,13 @@ import Register from "./pages/Register";
 import Verify from "./pages/Verify";
 import ForgotPassword from "./pages/FogotPassword";
 import Products from "./pages/Products";
-import Dialog from "@mui/material/Dialog";;
+import Dialog from "@mui/material/Dialog";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { IoMdClose } from "react-icons/io";
 import Slide from "@mui/material/Slide";
-import { Button } from "@mui/material";
 import AddProduct from "./pages/Products/addProduct";
 import HomeSliderBanners from "./pages/HomeSliderBanners";
 import AddHomeSliderBanners from "./pages/HomeSliderBanners/addHomeSliderBanners";
@@ -28,6 +27,10 @@ import AddSubCategory from "./pages/Categories/addSubCategory";
 import Users from "./pages/Users";
 import Orders from "./pages/Orders";
 
+import toast, { Toaster } from "react-hot-toast";
+import { fetchDataFromApi } from "./utils/api";
+import { useEffect } from "react";
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -37,9 +40,10 @@ const myContext = createContext();
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLogin, setIsLogin] = useState(false);
+  const [userData, setUserData] = useState(null);
   const [isOpenFullScreenPanel, setIsOpenFullScreenPanel] = useState({
     open: false,
-    model: ''
+    model: "",
   });
 
   const router = createBrowserRouter([
@@ -186,6 +190,29 @@ function App() {
     },
   ]);
 
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token !== undefined && token !== null && token !== "") {
+      setIsLogin(true);
+
+      fetchDataFromApi(`/api/user/user-details?token=${token}`).then((res) => {
+        setUserData(res.data);
+      });
+    } else {
+      setIsLogin(false);
+    }
+  }, [isLogin]);
+
+  const openAlertBox = (status, message) => {
+    if (status === "success") {
+      toast.success(message);
+    }
+
+    if (status === "error") {
+      toast.error(message);
+    }
+  };
+
   const values = {
     isSidebarOpen,
     setIsSidebarOpen,
@@ -193,6 +220,9 @@ function App() {
     setIsLogin,
     isOpenFullScreenPanel,
     setIsOpenFullScreenPanel,
+    openAlertBox,
+    userData,
+    setUserData,
   };
 
   return (
@@ -202,19 +232,29 @@ function App() {
       <Dialog
         fullScreen
         open={isOpenFullScreenPanel.open}
-        onClose={() => setIsOpenFullScreenPanel({
-          open: false
-        })}
+        onClose={() =>
+          setIsOpenFullScreenPanel({
+            open: false,
+          })
+        }
         TransitionComponent={Transition}
       >
-        <AppBar sx={{ position: 'relative',  backgroundColor: '#f1f1f1', color: 'rgba(0, 0, 0, 0.8)' }}>
+        <AppBar
+          sx={{
+            position: "relative",
+            backgroundColor: "#f1f1f1",
+            color: "rgba(0, 0, 0, 0.8)",
+          }}
+        >
           <Toolbar>
             <IconButton
               edge="start"
               color="inherit"
-              onClick={() => setIsOpenFullScreenPanel({
-                open: false
-              })}
+              onClick={() =>
+                setIsOpenFullScreenPanel({
+                  open: false,
+                })
+              }
               aria-label="close"
             >
               <IoMdClose />
@@ -224,12 +264,18 @@ function App() {
             </Typography>
           </Toolbar>
         </AppBar>
-        
+
         {isOpenFullScreenPanel.model === "Thêm Sản Phẩm" && <AddProduct />}
-        {isOpenFullScreenPanel.model === "Thêm Ảnh Quảng Cáo" && <AddHomeSliderBanners />}
+        {isOpenFullScreenPanel.model === "Thêm Ảnh Quảng Cáo" && (
+          <AddHomeSliderBanners />
+        )}
         {isOpenFullScreenPanel.model === "Thêm Danh Mục Cha" && <AddCategory />}
-        {isOpenFullScreenPanel.model === "Thêm Danh Mục Con" && <AddSubCategory />}
+        {isOpenFullScreenPanel.model === "Thêm Danh Mục Con" && (
+          <AddSubCategory />
+        )}
       </Dialog>
+
+      <Toaster />
     </myContext.Provider>
   );
 }
