@@ -30,6 +30,7 @@ import Orders from "./pages/Orders";
 import toast, { Toaster } from "react-hot-toast";
 import { fetchDataFromApi } from "./utils/api";
 import { useEffect } from "react";
+import Profile from "./pages/Profile";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -183,6 +184,21 @@ function App() {
             <div className="content-main flex">
               <Sidebar />
               <Orders />
+            </div>
+          </section>
+        </>
+      ),
+    },
+    {
+      path: "/profile",
+      exact: true,
+      element: (
+        <>
+          <section className="main">
+            <Header />
+            <div className="content-main flex">
+              <Sidebar />
+              <Profile />
             </div>
           </section>
         </>

@@ -23,7 +23,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
-const Header = (toggleSidebar) => {
+const Header = () => {
   const [anchorMyAccountAdmin, setAnchorMyAccountAdmin] = useState(null);
   const openMyAccountAdmin = Boolean(anchorMyAccountAdmin);
   const handleClickMyAccountAdmin = (event) => {
@@ -81,11 +81,16 @@ const Header = (toggleSidebar) => {
             <div className="relative">
               <div
                 onClick={handleClickMyAccountAdmin}
-                className="!rounded-full overflow-hidden cursor-pointer w-[30px] h-[30px]"
+                className="!rounded-full overflow-hidden cursor-pointer !w-[35px] !h-[35px] !min-w-[35px]"
               >
                 <img
-                  src="https://lh3.googleusercontent.com/a/ACg8ocLzyJsxtulB4lUiFk0nxv23s3JYNVuNbuy4cwNnREIZ=s96-c"
+                  src={context?.userData?.avatar}
                   className="w-full h-full object-cover"
+                  style={{
+                    imageRendering: "auto",
+                    backfaceVisibility: "hidden",
+                    transform: "translate3d(0,0,0)",
+                  }}
                 />
               </div>
 
@@ -128,31 +133,42 @@ const Header = (toggleSidebar) => {
               >
                 <MenuItem onClick={handleCloseMyAccountAdmin}>
                   <div className="flex items-center gap-3">
-                    <div className="!rounded-full overflow-hidden cursor-pointer w-[30px] h-[30px]">
+                    <div className="!rounded-full overflow-hidden cursor-pointer w-[35px] h-[35px] !min-w-[35px]">
                       <img
-                        src="https://lh3.googleusercontent.com/a/ACg8ocLzyJsxtulB4lUiFk0nxv23s3JYNVuNbuy4cwNnREIZ=s96-c"
+                        src={context?.userData?.avatar}
                         className="w-full h-full object-cover"
+                        style={{
+                          imageRendering: "auto",
+                          backfaceVisibility: "hidden",
+                          transform: "translate3d(0,0,0)",
+                        }}
                       />
                     </div>
 
                     <div className="info">
-                      <h3 className="text-[14px] text-black/80 font-[600]">
-                        {context?.userData?.name}
-                      </h3>
-                      <p className="text-[13px] font-[400] text-black/80">
-                        {context?.userData?.email}
-                      </p>
+                      {context?.userData && (
+                        <>
+                          <h3 className="text-[14px] text-black/80 font-[600]">
+                            {context?.userData?.name}
+                          </h3>
+                          <p className="text-[13px] font-[400] text-black/80">
+                            {context?.userData?.email}
+                          </p>
+                        </>
+                      )}
                     </div>
                   </div>
                 </MenuItem>
                 <Divider />
-                <MenuItem
-                  onClick={handleCloseMyAccountAdmin}
-                  className="!flex items-center gap-2"
-                >
-                  <FaRegUser className="text-[15px] text-black/70" />
-                  <span className="text-[14px] font-[500]">Tài khoản</span>
-                </MenuItem>
+                <Link to="/profile">
+                  <MenuItem
+                    onClick={handleCloseMyAccountAdmin}
+                    className="!flex items-center gap-2"
+                  >
+                    <FaRegUser className="text-[15px] text-black/70" />
+                    <span className="text-[14px] font-[500]">Tài khoản</span>
+                  </MenuItem>
+                </Link>
                 <MenuItem onClick={logout} className="!flex items-center gap-2">
                   <IoIosLogOut className="text-[17px]" />
                   <span className="text-[14px] font-[500]">Đăng xuất</span>
