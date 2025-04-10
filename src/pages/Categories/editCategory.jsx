@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import UploadBox from "../../components/UploadBox";
 import { Button } from "@mui/material";
 import { IoMdClose, IoMdCloudUpload } from "react-icons/io";
@@ -6,11 +6,11 @@ import { IoMdClose, IoMdCloudUpload } from "react-icons/io";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 // import "react-lazy-load-image-component/src/effects/blur.css";
 import { useState } from "react";
-import { deleteImages, postData } from "../../utils/api";
+import { deleteImages, editData, fetchDataFromApi, postData } from "../../utils/api";
 import { myContext } from "../../App";
 import CircularProgress from "@mui/material/CircularProgress";
 
-const AddCategory = () => {
+const EditCategory = () => {
   const [previews, setPreviews] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,6 +21,16 @@ const AddCategory = () => {
 
   const context = useContext(myContext);
 
+  useEffect(() => {
+    const id = context?.isOpenFullScreenPanel?.id;
+
+    fetchDataFromApi(`/api/category/${id}`).then((res) => {
+        console.log(res);
+        formFields.name = res?.category.name;
+        setPreviews(res?.category.images);
+    })
+  }, []);
+
   const onChangeInput = (e) => {
     const { name, value } = e.target;
     setFormFields(() => {
@@ -29,6 +39,7 @@ const AddCategory = () => {
         [name]: value,
       };
     });
+    formFields.images = previews;
   };
 
   const setPreviewsFunc = (previewsArr) => {
@@ -70,7 +81,7 @@ const AddCategory = () => {
       return false;
     }
 
-    postData("/api/category/create", formFields).then((res) => {
+    editData(`/api/category/${context?.isOpenFullScreenPanel?.id}`, formFields).then((res) => {
       setTimeout(() => {
         setIsLoading(false);
         context.setIsOpenFullScreenPanel({
@@ -153,4 +164,4 @@ const AddCategory = () => {
   );
 };
 
-export default AddCategory;
+export default EditCategory;

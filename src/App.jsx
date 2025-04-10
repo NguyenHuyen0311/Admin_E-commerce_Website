@@ -31,6 +31,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { fetchDataFromApi } from "./utils/api";
 import { useEffect } from "react";
 import Profile from "./pages/Profile";
+import EditCategory from "./pages/Categories/editCategory";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -45,6 +46,7 @@ function App() {
   const [isOpenFullScreenPanel, setIsOpenFullScreenPanel] = useState({
     open: false,
     model: "",
+    id: ""
   });
 
   const router = createBrowserRouter([
@@ -289,6 +291,7 @@ function App() {
         {isOpenFullScreenPanel.model === "Thêm Danh Mục Con" && (
           <AddSubCategory />
         )}
+        {isOpenFullScreenPanel.model === "Sửa Danh Mục Cha" && <EditCategory />}
       </Dialog>
 
       <Toaster />
