@@ -22,15 +22,14 @@ import { Link } from "react-router";
 const Categories = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
-  const [catData, setCatData] = useState([]);
 
   const context = useContext(myContext);
 
   useEffect(() => {
     fetchDataFromApi("/api/category").then((res) => {
-      setCatData(res?.data);
+      context?.setCatData(res?.data);
     });
-  }, [context?.isOpenFullScreenPanel]);
+  }, [context?.isOpenFullScreenPanel])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -44,7 +43,7 @@ const Categories = () => {
   const deleteCat = (id) => {
     deleteData(`/api/category/${id}`).then((res) => {
       fetchDataFromApi("/api/category").then((res) => {
-        setCatData(res?.data);
+        context?.setCatData(res?.data);
       });
     });
   }
@@ -98,8 +97,8 @@ const Categories = () => {
             </TableHead>
 
             <TableBody>
-              {catData?.length !== 0 &&
-                catData?.map((item, index) => (
+              {context.catData?.length !== 0 &&
+                context.catData?.map((item, index) => (
                   <TableRow key={item?._id || index}>
                     <TableCell className="border border-gray-300 !text-center">
                       <div className="flex justify-center items-center group">
@@ -137,7 +136,7 @@ const Categories = () => {
                             style={{ minWidth: "35px" }}
                             className="!w-[35px] !h-[35px] flex items-center justify-center !min-w-[35px] !rounded-full hover:!bg-[#f1f1f1]"
                           >
-                            <IoPencil className="text-black/60 !text-[20px]" />
+                            <IoPencil className="text-black/70 !text-[20px]" />
                           </Button>
                         </TooltipMUI>
                         <TooltipMUI title="Xóa">
@@ -146,7 +145,7 @@ const Categories = () => {
                             style={{ minWidth: "35px" }}
                             className="!w-[35px] !h-[35px] flex items-center justify-center !min-w-[35px] !rounded-full hover:!bg-[#f1f1f1]"
                           >
-                            <IoTrash className="text-black/60 !text-[20px]" />
+                            <IoTrash className="text-black/70 !text-[20px]" />
                           </Button>
                         </TooltipMUI>
                       </div>

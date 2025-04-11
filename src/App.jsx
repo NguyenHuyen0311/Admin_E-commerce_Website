@@ -43,6 +43,7 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLogin, setIsLogin] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [catData, setCatData] = useState([]);
   const [isOpenFullScreenPanel, setIsOpenFullScreenPanel] = useState({
     open: false,
     model: "",
@@ -221,6 +222,16 @@ function App() {
     }
   }, [isLogin]);
 
+  useEffect(() => {
+    getCat();
+  }, []);
+
+  const getCat = () => {
+    fetchDataFromApi("/api/category").then((res) => {
+      setCatData(res?.data);
+    });
+  }
+
   const openAlertBox = (status, message) => {
     if (status === "success") {
       toast.success(message);
@@ -241,6 +252,9 @@ function App() {
     openAlertBox,
     userData,
     setUserData,
+    catData,
+    setCatData,
+    getCat,
   };
 
   return (
