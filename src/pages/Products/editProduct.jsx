@@ -1,5 +1,5 @@
 import { Button, Rating } from "@mui/material";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { IoMdCloudUpload } from "react-icons/io";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -9,9 +9,13 @@ import { IoMdClose } from "react-icons/io";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { myContext } from "../../App";
-import { deleteImages, postData } from "../../utils/api";
-import { useNavigate } from "react-router";
+import {
+  deleteImages,
+  editData,
+  fetchDataFromApi
+} from "../../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useNavigate } from "react-router";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -24,7 +28,7 @@ const MenuProps = {
   },
 };
 
-const AddProduct = () => {
+const EditProduct = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [previews, setPreviews] = useState([]);
   const [formFields, setFormFields] = useState({
@@ -58,6 +62,43 @@ const AddProduct = () => {
   const [productFeatured, setProductFeatured] = useState("");
   const [productFlavor, setProductFlavor] = useState([]);
   const [productWeight, setProductWeight] = useState([]);
+
+  useEffect(() => {
+    fetchDataFromApi(`/api/product/${context?.isOpenFullScreenPanel?.id}`).then(
+      (res) => {
+        setFormFields({
+          name: res?.product?.name || "",
+          description: res?.product?.description || "",
+          images: res?.product?.images || [],
+          brand: res?.product?.brand || "",
+          price: res?.product?.price || "",
+          oldPrice: res?.product?.oldPrice || "",
+          catName: res?.product?.catName || "",
+          catId: res?.product?.catId || "",
+          subCatId: res?.product?.subCatId || "",
+          subCatName: res?.product?.subCatName || "",
+          thirdSubCatId: res?.product?.thirdSubCatId || "",
+          thirdSubCatName: res?.product?.thirdSubCatName || "",
+          category: res?.product?.category || "",
+          countInStock: res?.product?.countInStock || "",
+          rating: res?.product?.rating || "",
+          isFeatured: res?.product?.isFeatured || false,
+          discount: res?.product?.discount || "",
+          productWeight: res?.product?.productWeight || [],
+          productFlavor: res?.product?.productFlavor || [],
+        });
+
+        setProductCategory(res?.product?.catId || "");
+        setProductSubCategory(res?.product?.subCatId || "");
+        setProductThirdSubCategory(res?.product?.thirdSubCatId || "");
+        setProductFlavor(res?.product?.productFlavor || []);
+        setProductWeight(res?.product?.productWeight || []);
+        setProductFeatured(res?.product?.isFeatured);
+
+        setPreviews(res?.product?.images);
+      }
+    );
+  }, []);
 
   const handleChangeProductCategory = (event) => {
     setProductCategory(event.target.value);
@@ -128,8 +169,15 @@ const AddProduct = () => {
   };
 
   const setPreviewsFunc = (previewsArr) => {
-    setPreviews(previewsArr);
-    formFields.images = previewsArr;
+    const imgArr = previews;
+    for (let i = 0; i < previewsArr.length; i++) {
+      imgArr.push(previewsArr[i]);
+    }
+    setPreviews([]);
+    setTimeout(() => {
+      setPreviews(imgArr);
+      formFields.images = imgArr;
+    }, 10);
   };
 
   const removeImg = (image, index) => {
@@ -163,7 +211,7 @@ const AddProduct = () => {
       setIsLoading(false);
       return false;
     }
-    
+
     if (formFields.catId === "") {
       context.openAlertBox("error", "Vui lòng chọn danh mục sản phẩm!");
       setIsLoading(false);
@@ -175,7 +223,7 @@ const AddProduct = () => {
       setIsLoading(false);
       return false;
     }
-    
+
     if (formFields.price === "") {
       context.openAlertBox("error", "Vui lòng nhập giá sản phẩm!");
       setIsLoading(false);
@@ -195,13 +243,19 @@ const AddProduct = () => {
     }
 
     if (formFields.discount === "") {
-      context.openAlertBox("error", "Vui lòng nhập phần trăm giảm giá sản phẩm!");
+      context.openAlertBox(
+        "error",
+        "Vui lòng nhập phần trăm giảm giá sản phẩm!"
+      );
       setIsLoading(false);
       return false;
     }
 
     if (formFields.rating === "") {
-      context.openAlertBox("error", "Vui lòng chọn số sao đánh giá của sản phẩm!");
+      context.openAlertBox(
+        "error",
+        "Vui lòng chọn số sao đánh giá của sản phẩm!"
+      );
       setIsLoading(false);
       return false;
     }
@@ -212,9 +266,12 @@ const AddProduct = () => {
       return false;
     }
 
-    postData("/api/product/create", formFields).then((res) => {
-      if (res?.error === false) {
-        context.openAlertBox("success", res?.message);
+    editData(
+      `/api/product/updateProduct/${context?.isOpenFullScreenPanel?.id}`,
+      formFields
+    ).then((res) => {
+      if(res?.data?.error === false) {
+        context.openAlertBox("success", res?.data?.message);
         setTimeout(() => {
           setIsLoading(false);
           context.setIsOpenFullScreenPanel({
@@ -224,7 +281,7 @@ const AddProduct = () => {
         }, 1000);
       } else {
         setIsLoading(false);
-        context.openAlertBox("error", res?.message);
+        context.openAlertBox("error", res?.data?.message);
       }
     });
   };
@@ -525,7 +582,7 @@ const AddProduct = () => {
             <label className="text-black/90 font-medium" htmlFor="rating">
               Đánh giá
             </label>
-            <Rating onChange={onChangeRating} defaultValue={0} />
+            <Rating name="rating" onChange={onChangeRating} value={formFields.rating} defaultValue={0} />
           </div>
 
           <div className="w-full">
@@ -584,4 +641,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default EditProduct;

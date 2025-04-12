@@ -4,6 +4,7 @@ import { IoMdCloudUpload } from "react-icons/io";
 import { myContext } from "../../App";
 import { postData } from "../../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useNavigate } from "react-router";
 
 const AddSubCategory = () => {
   const [categoryL1Fil, setCategoryL1Fil] = useState("");
@@ -23,6 +24,7 @@ const AddSubCategory = () => {
   });
 
   const context = useContext(myContext);
+  const history = useNavigate();
 
   const handleChangeCategoryL1Fil = (event) => {
     setCategoryL1Fil(event.target.value);
@@ -93,6 +95,7 @@ const AddSubCategory = () => {
           open: false,
         });
         context?.getCat();
+        history("/sub-category");
       }, 1500);
     });
   };
@@ -121,6 +124,7 @@ const AddSubCategory = () => {
           open: false,
         });
         context?.getCat();
+        history("/sub-category");
       }, 1500);
     });
   };

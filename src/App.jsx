@@ -10,20 +10,9 @@ import Register from "./pages/Register";
 import Verify from "./pages/Verify";
 import ForgotPassword from "./pages/FogotPassword";
 import Products from "./pages/Products";
-import Dialog from "@mui/material/Dialog";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import { IoMdClose } from "react-icons/io";
-import Slide from "@mui/material/Slide";
-import AddProduct from "./pages/Products/addProduct";
 import HomeSliderBanners from "./pages/HomeSliderBanners";
-import AddHomeSliderBanners from "./pages/HomeSliderBanners/addHomeSliderBanners";
 import Categories from "./pages/Categories";
-import AddCategory from "./pages/Categories/addCategory";
 import SubCategory from "./pages/Categories/subCategory";
-import AddSubCategory from "./pages/Categories/addSubCategory";
 import Users from "./pages/Users";
 import Orders from "./pages/Orders";
 
@@ -31,11 +20,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { fetchDataFromApi } from "./utils/api";
 import { useEffect } from "react";
 import Profile from "./pages/Profile";
-import EditCategory from "./pages/Categories/editCategory";
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import ProductDetails from "./pages/Products/productDetails";
 
 const myContext = createContext();
 
@@ -207,6 +192,21 @@ function App() {
         </>
       ),
     },
+    {
+      path: "/product/:id",
+      exact: true,
+      element: (
+        <>
+          <section className="main">
+            <Header />
+            <div className="content-main flex">
+              <Sidebar />
+              <ProductDetails />
+            </div>
+          </section>
+        </>
+      ),
+    },
   ]);
 
   useEffect(() => {
@@ -260,53 +260,6 @@ function App() {
   return (
     <myContext.Provider value={values}>
       <RouterProvider router={router} />
-
-      <Dialog
-        fullScreen
-        open={isOpenFullScreenPanel.open}
-        onClose={() =>
-          setIsOpenFullScreenPanel({
-            open: false,
-          })
-        }
-        TransitionComponent={Transition}
-      >
-        <AppBar
-          sx={{
-            position: "relative",
-            backgroundColor: "#f1f1f1",
-            color: "rgba(0, 0, 0, 0.8)",
-          }}
-        >
-          <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={() =>
-                setIsOpenFullScreenPanel({
-                  open: false,
-                })
-              }
-              aria-label="close"
-            >
-              <IoMdClose />
-            </IconButton>
-            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              {isOpenFullScreenPanel.model}
-            </Typography>
-          </Toolbar>
-        </AppBar>
-
-        {isOpenFullScreenPanel.model === "Thêm Sản Phẩm" && <AddProduct />}
-        {isOpenFullScreenPanel.model === "Thêm Ảnh Quảng Cáo" && (
-          <AddHomeSliderBanners />
-        )}
-        {isOpenFullScreenPanel.model === "Thêm Danh Mục Cha" && <AddCategory />}
-        {isOpenFullScreenPanel.model === "Thêm Danh Mục Con" && (
-          <AddSubCategory />
-        )}
-        {isOpenFullScreenPanel.model === "Sửa Danh Mục Cha" && <EditCategory />}
-      </Dialog>
 
       <Toaster />
     </myContext.Provider>
