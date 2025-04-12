@@ -85,7 +85,7 @@ export const deleteImages = async (url, image) => {
   return res;
 }
 
-export const deleteData = async (url, image) => {
+export const deleteData = async (url, id) => {
   const params = {
     headers: {
       "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
@@ -95,4 +95,20 @@ export const deleteData = async (url, image) => {
   
   const { res } = await axios.delete(apiUrl + url, params);
   return res;
+}
+
+export const deleteMultipleData = async (url, ids) => {
+  const params = {
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
+      "Content-Type": "application/json",
+    }
+  }
+
+  const res = await axios.delete(apiUrl + url, {
+    ...params,
+    data: ids,  
+  });
+
+  return res.data;
 }

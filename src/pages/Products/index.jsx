@@ -18,7 +18,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TooltipMUI from "@mui/material/Tooltip";
 import { IoEye, IoPencil, IoSearch, IoTrash } from "react-icons/io5";
 import { myContext } from "../../App";
-import { deleteData, fetchDataFromApi } from "../../utils/api";
+import { deleteData, deleteMultipleData, fetchDataFromApi } from "../../utils/api";
 import { Link } from "react-router";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
@@ -32,6 +32,7 @@ const Products = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
   const [productData, setProductData] = useState([]);
+  const [sortedIds, setSortedIds] = useState([]);
 
   const context = useContext(myContext);
 
@@ -41,10 +42,56 @@ const Products = () => {
 
   const getProducts = () => {
     fetchDataFromApi("/api/product/getAllProducts").then((res) => {
+      let productArr = [];
       if (res?.error === false) {
-        setProductData(res?.products);
+        for (let i = 0; i < res?.products?.length; i++) {
+          productArr[i] = res?.products[i];
+          productArr[i].checked = false;
+          // console.log(res?.products[i]);
+        }
+        // console.log(productArr);
+
+        setProductData(productArr);
       }
     });
+  };
+
+  const handleSelectAll = (e) => {
+    const isChecked = e.target.checked;
+
+    const updatedItems = productData.map((item) => ({
+      ...item,
+      checked: isChecked,
+    }));
+    setProductData(updatedItems);
+
+    // Update the sorted IDs state
+    if (isChecked) {
+      const ids = updatedItems.map((item) => item._id).sort((a, b) => a - b);
+      // console.log(ids);
+      setSortedIds(ids);
+    } else {
+      setSortedIds([]);
+    }
+  };
+
+  const handleCheckboxChange = (e, id, index) => {
+    const updatedItems = productData.map((item) => {
+      if (item._id === id) {
+        return { ...item, checked: !item.checked };
+      }
+      return item;
+    });
+    setProductData(updatedItems);
+    // console.log(updatedItems);
+
+    // Update the sorted IDs state
+    const selectedIds = updatedItems
+      .filter((item) => item.checked)
+      .map((item) => item._id)
+      .sort((a, b) => a - b);
+    setSortedIds(selectedIds);
+    // console.log(selectedIds);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -54,33 +101,37 @@ const Products = () => {
   const handleChangeCategoryL1Fil = (event) => {
     setCategoryL1Fil(event.target.value);
 
-    fetchDataFromApi(`/api/product/getAllProductsByCatId/${event.target.value}`).then((res) => {
+    fetchDataFromApi(
+      `/api/product/getAllProductsByCatId/${event.target.value}`
+    ).then((res) => {
       if (res?.error === false) {
         setProductData(res?.products);
       }
-    })
+    });
   };
 
   const handleChangeCategoryL2Fil = (event) => {
     setCategoryL2Fil(event.target.value);
 
-    fetchDataFromApi(`/api/product/getAllProductsBySubCatId/${event.target.value}`).then((res) => {
+    fetchDataFromApi(
+      `/api/product/getAllProductsBySubCatId/${event.target.value}`
+    ).then((res) => {
       if (res?.error === false) {
         setProductData(res?.products);
       }
-    })
+    });
   };
 
   const handleChangeCategoryL3Fil = (event) => {
     setCategoryL3Fil(event.target.value);
 
-    fetchDataFromApi(`/api/product/getAllProductsByThirdCatId/${event.target.value}`).then((res) => {
-      console.log(res);
-      
+    fetchDataFromApi(
+      `/api/product/getAllProductsByThirdCatId/${event.target.value}`
+    ).then((res) => {
       if (res?.error === false) {
         setProductData(res?.products);
       }
-    })
+    });
   };
 
   const handleChangeRowsPerPage = (event) => {
@@ -95,6 +146,23 @@ const Products = () => {
     });
   };
 
+  const deleteMultipleProduct = () => {
+    if(sortedIds.length === 0) {
+      context.openAlertBox("error", "Vui lòng chọn sản phẩm muốn xóa!");
+      return;
+    }
+
+    try {
+      deleteMultipleData(`/api/product/deleteMultipleProducts`, { ids: sortedIds }).then((res) => {
+        console.log(res);
+        getProducts();
+        context.openAlertBox("success", "Xóa sản phẩm thành công!");
+      })
+    } catch (error) {
+      context.openAlertBox("error", "Xóa sản phẩm thất bại!");
+    }
+  }
+
   return (
     <section
       className={`mt-[50px] transition-all ${
@@ -107,7 +175,7 @@ const Products = () => {
         <div className="w-full px-5 flex justify-between mb-3 items-center">
           <h2 className="text-[18px] font-bold">Danh sách sản phẩm</h2>
           <div className="flex items-center gap-3">
-            <Button className="btn-border !h-[34px]">Xóa sản phẩm</Button>
+            <Button onClick={deleteMultipleProduct} variant="contained" className="btn-border !shadow-none !h-[34px]">Xóa</Button>
             <Button
               className="btn-primary"
               onClick={() =>
@@ -137,10 +205,7 @@ const Products = () => {
               >
                 {context?.catData?.map((cat, index) => {
                   return (
-                    <MenuItem
-                      key={index}
-                      value={cat?._id}
-                    >
+                    <MenuItem key={index} value={cat?._id}>
                       {cat?.name}
                     </MenuItem>
                   );
@@ -166,10 +231,7 @@ const Products = () => {
                     cat?.children?.length !== 0 &&
                     cat?.children?.map((subCat, index_) => {
                       return (
-                        <MenuItem
-                          key={index_}
-                          value={subCat?._id}
-                        >
+                        <MenuItem key={index_} value={subCat?._id}>
                           {subCat?.name}
                         </MenuItem>
                       );
@@ -200,10 +262,7 @@ const Products = () => {
                         subCat?.children?.length !== 0 &&
                         subCat?.children?.map((thirdSubCat, index__) => {
                           return (
-                            <MenuItem
-                              key={index__}
-                              value={thirdSubCat?._id}
-                            >
+                            <MenuItem key={index__} value={thirdSubCat?._id}>
                               {thirdSubCat?.name}
                             </MenuItem>
                           );
@@ -236,7 +295,16 @@ const Products = () => {
             <TableHead>
               <TableRow className="bg-gray-100">
                 <TableCell className="border border-gray-300 whitespace-nowrap !text-center !text-[12px] uppercase !font-[700]">
-                  <Checkbox {...label} size="small" />
+                  <Checkbox
+                    {...label}
+                    size="small"
+                    checked={
+                      productData?.length > 0
+                        ? productData.every((item) => item.checked)
+                        : false
+                    }
+                    onChange={handleSelectAll}
+                  />
                 </TableCell>
                 <TableCell className="border border-gray-300 whitespace-nowrap !text-center !text-[12px] uppercase !font-[700]">
                   Sản phẩm
@@ -273,7 +341,14 @@ const Products = () => {
                     return (
                       <TableRow key={index}>
                         <TableCell className="border border-gray-300 whitespace-nowrap !text-center !text-[12px] uppercase !font-[700]">
-                          <Checkbox {...label} size="small" />
+                          <Checkbox
+                            {...label}
+                            size="small"
+                            checked={product?.checked === true ? true : false}
+                            onChange={(e) =>
+                              handleCheckboxChange(e, product?._id, index)
+                            }
+                          />
                         </TableCell>
                         <TableCell className="border border-gray-300">
                           <div className="flex items-center w-[100%] !whitespace-nowrap gap-3">
