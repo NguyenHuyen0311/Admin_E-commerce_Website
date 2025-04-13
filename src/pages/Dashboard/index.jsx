@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import DashboardBoxes from "../../components/DashboardBoxes";
 import { FaPlus } from "react-icons/fa6";
 import { FaAngleDown } from "react-icons/fa6";
@@ -34,6 +34,14 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import {
+  deleteData,
+  deleteMultipleData,
+  fetchDataFromApi,
+} from "../../utils/api";
+import { Link } from "react-router";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -44,9 +52,6 @@ const Dashboard = () => {
     setExpanded(!expanded);
   };
 
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [categoryL1Fil, setCategoryL1Fil] = useState("");
   const [chart1Data, setChart1Data] = useState([
     {
       name: "Tháng 1",
@@ -122,8 +127,112 @@ const Dashboard = () => {
     },
   ]);
 
+  const [categoryL1Fil, setCategoryL1Fil] = useState("");
+  const [categoryL2Fil, setCategoryL2Fil] = useState("");
+  const [categoryL3Fil, setCategoryL3Fil] = useState("");
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [page, setPage] = useState(0);
+  const [productData, setProductData] = useState([]);
+  const [sortedIds, setSortedIds] = useState([]);
+
+  const context = useContext(myContext);
+
+  useEffect(() => {
+    getProducts();
+  }, [context?.isOpenFullScreenPanel]);
+
+  const getProducts = () => {
+    fetchDataFromApi("/api/product/getAllProducts").then((res) => {
+      let productArr = [];
+      if (res?.error === false) {
+        for (let i = 0; i < res?.products?.length; i++) {
+          productArr[i] = res?.products[i];
+          productArr[i].checked = false;
+        }
+        setProductData(productArr);
+      }
+    });
+  };
+
+  const handleSelectAll = (e) => {
+    const isChecked = e.target.checked;
+
+    const updatedItems = productData.map((item) => ({
+      ...item,
+      checked: isChecked,
+    }));
+    setProductData(updatedItems);
+
+    // Update the sorted IDs state
+    if (isChecked) {
+      const ids = updatedItems.map((item) => item._id).sort((a, b) => a - b);
+      setSortedIds(ids);
+    } else {
+      setSortedIds([]);
+    }
+  };
+
+  const handleCheckboxChange = (e, id, index) => {
+    const updatedItems = productData.map((item) => {
+      if (item._id === id) {
+        return { ...item, checked: !item.checked };
+      }
+      return item;
+    });
+    setProductData(updatedItems);
+
+    // Update the sorted IDs state
+    const selectedIds = updatedItems
+      .filter((item) => item.checked)
+      .map((item) => item._id)
+      .sort((a, b) => a - b);
+    setSortedIds(selectedIds);
+  };
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
+  };
+
+  const handleChangeCategoryL1Fil = (event) => {
+    setCategoryL1Fil(event.target.value);
+    setCategoryL2Fil("");
+    setCategoryL3Fil("");
+
+    fetchDataFromApi(
+      `/api/product/getAllProductsByCatId/${event.target.value}`
+    ).then((res) => {
+      if (res?.error === false) {
+        setProductData(res?.products);
+      }
+    });
+  };
+
+  const handleChangeCategoryL2Fil = (event) => {
+    setCategoryL2Fil(event.target.value);
+    setCategoryL1Fil("");
+    setCategoryL3Fil("");
+
+    fetchDataFromApi(
+      `/api/product/getAllProductsBySubCatId/${event.target.value}`
+    ).then((res) => {
+      if (res?.error === false) {
+        setProductData(res?.products);
+      }
+    });
+  };
+
+  const handleChangeCategoryL3Fil = (event) => {
+    setCategoryL3Fil(event.target.value);
+    setCategoryL1Fil("");
+    setCategoryL2Fil("");
+
+    fetchDataFromApi(
+      `/api/product/getAllProductsByThirdCatId/${event.target.value}`
+    ).then((res) => {
+      if (res?.error === false) {
+        setProductData(res?.products);
+      }
+    });
   };
 
   const handleChangeRowsPerPage = (event) => {
@@ -131,11 +240,31 @@ const Dashboard = () => {
     setPage(0);
   };
 
-  const handleChangeCategoryL1Fil = (event) => {
-    setCategoryL1Fil(event.target.value);
+  const deleteProduct = (id) => {
+    deleteData(`/api/product/${id}`).then((res) => {
+      getProducts();
+      context.openAlertBox("success", "Xóa sản phẩm thành công!");
+    });
   };
 
-  const context = useContext(myContext);
+  const deleteMultipleProduct = () => {
+    if (sortedIds.length === 0) {
+      context.openAlertBox("error", "Vui lòng chọn sản phẩm muốn xóa!");
+      return;
+    }
+
+    try {
+      deleteMultipleData(`/api/product/deleteMultipleProducts`, {
+        ids: sortedIds,
+      }).then((res) => {
+        console.log(res);
+        getProducts();
+        context.openAlertBox("success", "Xóa sản phẩm thành công!");
+      });
+    } catch (error) {
+      context.openAlertBox("error", "Xóa sản phẩm thất bại!");
+    }
+  };
 
   return (
     <>
@@ -154,10 +283,15 @@ const Dashboard = () => {
               Dưới đây là tình hình cửa hàng của bạn hôm nay! Xem ngay thống kê
               chi tiết.
             </p>
-            <Button onClick={() => context.setIsOpenFullScreenPanel({
+            <Button
+              onClick={() =>
+                context.setIsOpenFullScreenPanel({
                   open: true,
-                  model: "Thêm Sản Phẩm"
-                })} className="btn-primary transition-all !mt-5 flex gap-1 !items-center">
+                  model: "Thêm Sản Phẩm",
+                })
+              }
+              className="btn-primary transition-all !mt-5 flex gap-1 !items-center"
+            >
               <FaPlus className="text-[20px]" />
               <span>Thêm sản phẩm</span>
             </Button>
@@ -170,73 +304,116 @@ const Dashboard = () => {
 
         <div className="card my-5 bg-[#fff] py-5 rounded-md shadow-md">
           <div className="w-full px-5 flex justify-between mb-3 items-center">
-            <h2 className="text-[18px] font-bold">Sản phẩm</h2>
-            <Button onClick={() => context.setIsOpenFullScreenPanel({
-                  open: true,
-                  model: "Thêm Sản Phẩm"
-                })} className="btn-primary">Thêm sản phẩm</Button>
+            <h2 className="text-[18px] font-bold">Danh sách sản phẩm</h2>
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={deleteMultipleProduct}
+                variant="contained"
+                className="btn-border !shadow-none !h-[34px]"
+              >
+                Xóa
+              </Button>
+              <Button
+                className="btn-primary"
+                onClick={() =>
+                  context.setIsOpenFullScreenPanel({
+                    open: true,
+                    model: "Thêm Sản Phẩm",
+                  })
+                }
+              >
+                Thêm Sản Phẩm
+              </Button>
+            </div>
           </div>
 
-          <div className="w-full px-5 flex items-end justify-between gap-4 mb-6">
-            <div className="flex flex-col w-[25%] gap-2">
+          <div className="w-full mt-4 px-5 flex items-end justify-between gap-4 mb-6">
+            <div className="flex flex-col w-[22%] gap-2">
               <label className="text-[14px] font-[600]">
                 Theo danh mục lớn
               </label>
 
-              <Select
-                labelId="demo-simple-select-standard-label"
-                id="demo-simple-select-standard"
-                value={categoryL1Fil}
-                onChange={handleChangeCategoryL1Fil}
-                label="CategoryL1"
-                size="small"
-                className="rounded !h-[32px]"
-              >
-                <MenuItem value="">Không</MenuItem>
-                <MenuItem value={10}>Đồ ăn nhẹ</MenuItem>
-                <MenuItem value={20}>Đồ mặn</MenuItem>
-                <MenuItem value={30}>Đồ khỏe mạnh</MenuItem>
-              </Select>
+              {context?.catData?.length !== 0 && (
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="category"
+                  value={categoryL1Fil}
+                  label="categoryL1Fil"
+                  onChange={handleChangeCategoryL1Fil}
+                  size="small"
+                >
+                  {context?.catData?.map((cat, index) => {
+                    return (
+                      <MenuItem key={index} value={cat?._id}>
+                        {cat?.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              )}
             </div>
-            <div className="flex flex-col w-[25%] gap-2">
+            <div className="flex flex-col w-[22%] gap-2">
               <label className="text-[14px] font-[600]">
                 Theo danh mục cấp 2
               </label>
-              <Select
-                labelId="demo-simple-select-standard-label"
-                id="demo-simple-select-standard"
-                value={categoryL1Fil}
-                onChange={handleChangeCategoryL1Fil}
-                label="CategoryL1"
-                size="small"
-                className="rounded !h-[32px]"
-              >
-                <MenuItem value="">Không</MenuItem>
-                <MenuItem value={10}>Đồ ăn nhẹ</MenuItem>
-                <MenuItem value={20}>Đồ mặn</MenuItem>
-                <MenuItem value={30}>Đồ khỏe mạnh</MenuItem>
-              </Select>
+              {context?.catData?.length !== 0 && (
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="category"
+                  value={categoryL2Fil}
+                  label="categoryL2Fil"
+                  onChange={handleChangeCategoryL2Fil}
+                  size="small"
+                >
+                  {context?.catData?.map((cat) => {
+                    return (
+                      cat?.children?.length !== 0 &&
+                      cat?.children?.map((subCat, index_) => {
+                        return (
+                          <MenuItem key={index_} value={subCat?._id}>
+                            {subCat?.name}
+                          </MenuItem>
+                        );
+                      })
+                    );
+                  })}
+                </Select>
+              )}
             </div>
-            <div className="flex flex-col w-[25%] gap-2">
+            <div className="flex flex-col w-[22%] gap-2">
               <label className="text-[14px] font-[600]">
                 Theo danh mục cấp 3
               </label>
-              <Select
-                labelId="demo-simple-select-standard-label"
-                id="demo-simple-select-standard"
-                value={categoryL1Fil}
-                onChange={handleChangeCategoryL1Fil}
-                label="CategoryL1"
-                size="small"
-                className="rounded !h-[32px]"
-              >
-                <MenuItem value="">Không</MenuItem>
-                <MenuItem value={10}>Đồ ăn nhẹ</MenuItem>
-                <MenuItem value={20}>Đồ mặn</MenuItem>
-                <MenuItem value={30}>Đồ khỏe mạnh</MenuItem>
-              </Select>
+              {context?.catData?.length !== 0 && (
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="category"
+                  value={categoryL3Fil}
+                  label="categoryL3Fil"
+                  onChange={handleChangeCategoryL3Fil}
+                  size="small"
+                >
+                  {context?.catData?.map((cat) => {
+                    return (
+                      cat?.children?.length !== 0 &&
+                      cat?.children?.map((subCat) => {
+                        return (
+                          subCat?.children?.length !== 0 &&
+                          subCat?.children?.map((thirdSubCat, index__) => {
+                            return (
+                              <MenuItem key={index__} value={thirdSubCat?._id}>
+                                {thirdSubCat?.name}
+                              </MenuItem>
+                            );
+                          })
+                        );
+                      })
+                    );
+                  })}
+                </Select>
+              )}
             </div>
-            <div className="searchBox h-[40px] w-[25%] bg-[#f2f2f2] rounded-[8px] relative">
+            <div className="searchBox h-[40px] w-[34%] bg-[#f2f2f2] rounded-[8px] relative">
               <input
                 type="text"
                 placeholder="Tìm kiếm..."
@@ -257,7 +434,16 @@ const Dashboard = () => {
               <TableHead>
                 <TableRow className="bg-gray-100">
                   <TableCell className="border border-gray-300 whitespace-nowrap !text-center !text-[12px] uppercase !font-[700]">
-                    <Checkbox {...label} size="small" />
+                    <Checkbox
+                      {...label}
+                      size="small"
+                      checked={
+                        productData?.length > 0
+                          ? productData.every((item) => item.checked)
+                          : false
+                      }
+                      onChange={handleSelectAll}
+                    />
                   </TableCell>
                   <TableCell className="border border-gray-300 whitespace-nowrap !text-center !text-[12px] uppercase !font-[700]">
                     Sản phẩm
@@ -266,7 +452,7 @@ const Dashboard = () => {
                     Danh mục
                   </TableCell>
                   <TableCell className="border border-gray-300 whitespace-nowrap !text-center !text-[12px] uppercase !font-[700]">
-                    Danh mục nhỏ
+                    Danh mục con
                   </TableCell>
                   <TableCell className="border border-gray-300 whitespace-nowrap !text-center !text-[12px] uppercase !font-[700]">
                     Giá
@@ -287,87 +473,127 @@ const Dashboard = () => {
               </TableHead>
 
               <TableBody>
-                <TableRow>
-                  <TableCell className="border border-gray-300 whitespace-nowrap !text-center !text-[12px] uppercase !font-[700]">
-                    <Checkbox {...label} size="small" />
-                  </TableCell>
-                  <TableCell className="border border-gray-300">
-                    <div className="flex items-center w-[350px] gap-3">
-                      <img
-                        src=""
-                        alt="Sản phẩm"
-                        className="!w-[65px] !h-[65px] object-cover !min-w-[65px] rounded-md"
-                      />
-                      <div className="info">
-                        <h5 className="text-[14px] font-[600] line-clamp-2">
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Sequi omnis placeat quas facere a eaque optio
-                          corrupti voluptates. Eos laborum dignissimos
-                          reiciendis ipsam quidem. Fuga, rem ipsum? Repudiandae,
-                          libero magni?
-                        </h5>
-                        <p className="text-[12px] text-left mt-1 text-gray-500">
-                          Navi
-                        </p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
-                    Đồ ăn nhẹ
-                  </TableCell>
-                  <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
-                    Trà
-                  </TableCell>
-                  <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
-                    <div className="flex flex-col gap-1">
-                      <h4 className="text-[14px] line-through font-[600] opacity-60">
-                        50.000đ
-                      </h4>
-                      <h4 className="text-[15px] text-[#ff5252] font-[600]">
-                        40.000đ
-                      </h4>
-                    </div>
-                  </TableCell>
-                  <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
-                    <b>1</b>
-                  </TableCell>
-                  <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
-                    <h4 className="text-[#ff5252] text-[15px] font-[600]">
-                      150
-                    </h4>
-                  </TableCell>
-                  <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
-                    <Rating name="read-only" value={4} size="small" readOnly />
-                  </TableCell>
-                  <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <TooltipMUI title="Sửa">
-                        <Button
-                          style={{ minWidth: "35px" }}
-                          className="!w-[35px] !h-[35px] flex items-center justify-center !min-w-[35px] !rounded-full hover:!bg-[#f1f1f1]"
-                        >
-                          <IoPencil className="text-black/60 !text-[20px]" />
-                        </Button>
-                      </TooltipMUI>
-                      <TooltipMUI title="Xem">
-                        <Button
-                          style={{ minWidth: "35px" }}
-                          className="!w-[35px] !h-[35px] flex items-center justify-center !min-w-[35px] !rounded-full hover:!bg-[#f1f1f1]"
-                        >
-                          <IoEye className="text-black/60 !text-[20px]" />
-                        </Button>
-                      </TooltipMUI>
-                      <TooltipMUI title="Xóa">
-                        <Button
-                          style={{ minWidth: "35px" }}
-                          className="!w-[35px] !h-[35px] flex items-center justify-center !min-w-[35px] !rounded-full hover:!bg-[#f1f1f1]"
-                        >
-                          <IoTrash className="text-black/60 !text-[20px]" />
-                        </Button>
-                      </TooltipMUI>
-                    </div>
-                  </TableCell>
-                </TableRow>
+                {productData?.length !== 0 &&
+                  productData
+                    ?.slice(
+                      page * rowsPerPage,
+                      page * rowsPerPage + rowsPerPage
+                    )
+                    ?.map((product, index) => {
+                      return (
+                        <TableRow key={index}>
+                          <TableCell className="border border-gray-300 whitespace-nowrap !text-center !text-[12px] uppercase !font-[700]">
+                            <Checkbox
+                              {...label}
+                              size="small"
+                              checked={product?.checked === true ? true : false}
+                              onChange={(e) =>
+                                handleCheckboxChange(e, product?._id, index)
+                              }
+                            />
+                          </TableCell>
+                          <TableCell className="border border-gray-300">
+                            <div className="flex items-center w-[100%] !whitespace-nowrap gap-3">
+                              <Link
+                                to={`/product/${product?._id}`}
+                                data-discover="true"
+                              >
+                                <LazyLoadImage
+                                  className="!w-[65px] !h-[65px] object-cover !min-w-[65px] rounded-md"
+                                  alt={"image"}
+                                  name="images"
+                                  effect="blur"
+                                  wrapperProps={{
+                                    style: { transitionDelay: "1s" },
+                                  }}
+                                  src={product?.images[0]}
+                                />
+                              </Link>
+                              <div className="info">
+                                <h5 className="text-[14px] font-[600] line-clamp-2">
+                                  <Link to={`/product/${product?._id}`}>
+                                    {product?.name}
+                                  </Link>
+                                </h5>
+                                <p className="text-[12px] text-left mt-1 text-gray-500">
+                                  {product?.brand}
+                                </p>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
+                            {product?.catName}
+                          </TableCell>
+                          <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
+                            {product?.subCatName}
+                          </TableCell>
+                          <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
+                            <div className="flex flex-col gap-1">
+                              <h4 className="text-[14px] line-through font-[600] opacity-60">
+                                {product?.oldPrice?.toLocaleString("vi-VN")}đ
+                              </h4>
+                              <h4 className="text-[15px] text-[#ff5252] font-[600]">
+                                {product?.price?.toLocaleString("vi-VN")}đ
+                              </h4>
+                            </div>
+                          </TableCell>
+                          <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
+                            <b>{product?.discount}</b>
+                          </TableCell>
+                          <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
+                            <h4 className="text-[#ff5252] text-[15px] font-[600]">
+                              {product?.countInStock}
+                            </h4>
+                          </TableCell>
+                          <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
+                            <Rating
+                              name="read-only"
+                              value={product?.rating}
+                              size="small"
+                              readOnly
+                            />
+                          </TableCell>
+                          <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
+                            <div className="flex items-center justify-center gap-2">
+                              <TooltipMUI title="Sửa">
+                                <Button
+                                  onClick={() =>
+                                    context?.setIsOpenFullScreenPanel({
+                                      open: true,
+                                      model: "Sửa Sản Phẩm",
+                                      id: product?._id,
+                                    })
+                                  }
+                                  style={{ minWidth: "35px" }}
+                                  className="!w-[35px] !h-[35px] flex items-center justify-center !min-w-[35px] !rounded-full hover:!bg-[#f1f1f1]"
+                                >
+                                  <IoPencil className="text-black/60 !text-[20px]" />
+                                </Button>
+                              </TooltipMUI>
+                              <TooltipMUI title="Xem">
+                                <Link to={`/product/${product?._id}`}>
+                                  <Button
+                                    style={{ minWidth: "35px" }}
+                                    className="!w-[35px] !h-[35px] flex items-center justify-center !min-w-[35px] !rounded-full hover:!bg-[#f1f1f1]"
+                                  >
+                                    <IoEye className="text-black/60 !text-[20px]" />
+                                  </Button>
+                                </Link>
+                              </TooltipMUI>
+                              <TooltipMUI title="Xóa">
+                                <Button
+                                  onClick={() => deleteProduct(product?._id)}
+                                  style={{ minWidth: "35px" }}
+                                  className="!w-[35px] !h-[35px] flex items-center justify-center !min-w-[35px] !rounded-full hover:!bg-[#f1f1f1]"
+                                >
+                                  <IoTrash className="text-black/60 !text-[20px]" />
+                                </Button>
+                              </TooltipMUI>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
               </TableBody>
             </Table>
           </TableContainer>
@@ -377,7 +603,7 @@ const Dashboard = () => {
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component="div"
-              count={10}
+              count={productData?.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
@@ -585,13 +811,21 @@ const Dashboard = () => {
         </div>
 
         <div className="card my-5 pr-3 w-full h-[400px] bg-[#fff] py-5 pb-20 rounded-md shadow-md">
-          <h2 className="text-[16px] px-5 mb-3 font-[600] w-[70%]">Thống kê tổng tiền và người dùng</h2>
+          <h2 className="text-[16px] px-5 mb-3 font-[600] w-[70%]">
+            Thống kê tổng tiền và người dùng
+          </h2>
 
           <div className="flex items-center gap-3 px-5 mb-5">
-            <span className="flex items-center gap-2 cursor-pointer"><span className="block w-[10px] h-[10px] rounded-full bg-green-600"></span>Tổng số người dùng</span>
-            <span className="flex items-center gap-2 cursor-pointer"><span className="block w-[10px] h-[10px] rounded-full bg-blue-600"></span>Tổng số tiền</span>
+            <span className="flex items-center gap-2 cursor-pointer">
+              <span className="block w-[10px] h-[10px] rounded-full bg-green-600"></span>
+              Tổng số người dùng
+            </span>
+            <span className="flex items-center gap-2 cursor-pointer">
+              <span className="block w-[10px] h-[10px] rounded-full bg-blue-600"></span>
+              Tổng số tiền
+            </span>
           </div>
-          
+
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               width={500}
@@ -616,7 +850,13 @@ const Dashboard = () => {
                 strokeWidth={2}
                 activeDot={{ r: 7 }}
               />
-              <Line type="monotone" activeDot={{ r: 7 }} strokeWidth={2} dataKey="sales" stroke="#82ca9d" />
+              <Line
+                type="monotone"
+                activeDot={{ r: 7 }}
+                strokeWidth={2}
+                dataKey="sales"
+                stroke="#82ca9d"
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>

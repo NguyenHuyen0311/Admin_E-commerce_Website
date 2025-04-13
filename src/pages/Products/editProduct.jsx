@@ -9,11 +9,7 @@ import { IoMdClose } from "react-icons/io";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { myContext } from "../../App";
-import {
-  deleteImages,
-  editData,
-  fetchDataFromApi
-} from "../../utils/api";
+import { deleteImages, editData, fetchDataFromApi } from "../../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useNavigate } from "react-router";
 
@@ -61,9 +57,23 @@ const EditProduct = () => {
   const [productThirdSubCategory, setProductThirdSubCategory] = useState("");
   const [productFeatured, setProductFeatured] = useState("");
   const [productFlavor, setProductFlavor] = useState([]);
+  const [productFlavorData, setProductFlavorData] = useState([]); 
   const [productWeight, setProductWeight] = useState([]);
+  const [productWeightData, setProductWeightData] = useState([]);
 
   useEffect(() => {
+    fetchDataFromApi(`/api/product/productFlavor/get`).then((res) => {
+      if (res?.error === false) {
+        setProductFlavorData(res?.data);
+      }
+    });
+
+    fetchDataFromApi(`/api/product/productWeight/get`).then((res) => {
+      if (res?.error === false) {
+        setProductWeightData(res?.data);
+      }
+    });
+
     fetchDataFromApi(`/api/product/${context?.isOpenFullScreenPanel?.id}`).then(
       (res) => {
         setFormFields({
@@ -270,7 +280,7 @@ const EditProduct = () => {
       `/api/product/updateProduct/${context?.isOpenFullScreenPanel?.id}`,
       formFields
     ).then((res) => {
-      if(res?.data?.error === false) {
+      if (res?.data?.error === false) {
         context.openAlertBox("success", res?.data?.message);
         setTimeout(() => {
           setIsLoading(false);
@@ -539,20 +549,27 @@ const EditProduct = () => {
               >
                 Hương vị
               </label>
-              <Select
-                multiple
-                labelId="demo-simple-select-label"
-                id="flavor"
-                value={productFlavor}
-                label="productFlavor"
-                onChange={handleChangeProductFlavor}
-                size="small"
-                MenuProps={MenuProps}
-              >
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
-              </Select>
+
+              {productFlavorData?.length !== 0 && (
+                <Select
+                  multiple
+                  labelId="demo-simple-select-label"
+                  id="flavor"
+                  value={productFlavor}
+                  label="productFlavor"
+                  onChange={handleChangeProductFlavor}
+                  size="small"
+                  MenuProps={MenuProps}
+                >
+                  {productFlavorData?.map((item, index) => {
+                    return (
+                      <MenuItem key={index} value={item?.name}>
+                        {item?.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              )}
             </div>
 
             <div className="w-[33%] flex flex-col">
@@ -562,19 +579,26 @@ const EditProduct = () => {
               >
                 Cân nặng
               </label>
-              <Select
-                multiple
-                labelId="demo-simple-select-label"
-                id="weight"
-                value={productWeight}
-                label="productWeight"
-                onChange={handleChangeProductWeight}
-                size="small"
-              >
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
-              </Select>
+              {productWeightData?.length !== 0 && (
+                <Select
+                  multiple
+                  labelId="demo-simple-select-label"
+                  id="weight"
+                  value={productWeight}
+                  label="productWeight"
+                  onChange={handleChangeProductWeight}
+                  size="small"
+                  MenuProps={MenuProps}
+                >
+                  {productWeightData?.map((item, index) => {
+                    return (
+                      <MenuItem key={index} value={item?.name}>
+                        {item?.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              )}
             </div>
           </div>
 
@@ -582,7 +606,12 @@ const EditProduct = () => {
             <label className="text-black/90 font-medium" htmlFor="rating">
               Đánh giá
             </label>
-            <Rating name="rating" onChange={onChangeRating} value={formFields.rating} defaultValue={0} />
+            <Rating
+              name="rating"
+              onChange={onChangeRating}
+              value={formFields.rating}
+              defaultValue={0}
+            />
           </div>
 
           <div className="w-full">

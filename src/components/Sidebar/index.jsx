@@ -206,6 +206,22 @@ const Sidebar = () => {
                   Thêm sản phẩm
                 </Button>
               </li>
+              <li className="w-full">
+                <Link to="/products/add-flavor">
+                  <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
+                    <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
+                    Thêm hương vị sản phẩm
+                  </Button>
+                </Link>
+              </li>
+              <li className="w-full">
+                <Link to="/products/add-weight">
+                  <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
+                    <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
+                    Thêm cân nặng sản phẩm
+                  </Button>
+                </Link>
+              </li>
             </ul>
           </Collapse>
         </li>

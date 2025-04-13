@@ -18,7 +18,11 @@ import TablePagination from "@mui/material/TablePagination";
 import TooltipMUI from "@mui/material/Tooltip";
 import { IoEye, IoPencil, IoSearch, IoTrash } from "react-icons/io5";
 import { myContext } from "../../App";
-import { deleteData, deleteMultipleData, fetchDataFromApi } from "../../utils/api";
+import {
+  deleteData,
+  deleteMultipleData,
+  fetchDataFromApi,
+} from "../../utils/api";
 import { Link } from "react-router";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
@@ -100,6 +104,8 @@ const Products = () => {
 
   const handleChangeCategoryL1Fil = (event) => {
     setCategoryL1Fil(event.target.value);
+    setCategoryL2Fil("");
+    setCategoryL3Fil("");
 
     fetchDataFromApi(
       `/api/product/getAllProductsByCatId/${event.target.value}`
@@ -112,6 +118,8 @@ const Products = () => {
 
   const handleChangeCategoryL2Fil = (event) => {
     setCategoryL2Fil(event.target.value);
+    setCategoryL1Fil("");
+    setCategoryL3Fil("");
 
     fetchDataFromApi(
       `/api/product/getAllProductsBySubCatId/${event.target.value}`
@@ -124,6 +132,8 @@ const Products = () => {
 
   const handleChangeCategoryL3Fil = (event) => {
     setCategoryL3Fil(event.target.value);
+    setCategoryL1Fil("");
+    setCategoryL2Fil("");
 
     fetchDataFromApi(
       `/api/product/getAllProductsByThirdCatId/${event.target.value}`
@@ -147,21 +157,23 @@ const Products = () => {
   };
 
   const deleteMultipleProduct = () => {
-    if(sortedIds.length === 0) {
+    if (sortedIds.length === 0) {
       context.openAlertBox("error", "Vui lòng chọn sản phẩm muốn xóa!");
       return;
     }
 
     try {
-      deleteMultipleData(`/api/product/deleteMultipleProducts`, { ids: sortedIds }).then((res) => {
+      deleteMultipleData(`/api/product/deleteMultipleProducts`, {
+        ids: sortedIds,
+      }).then((res) => {
         console.log(res);
         getProducts();
         context.openAlertBox("success", "Xóa sản phẩm thành công!");
-      })
+      });
     } catch (error) {
       context.openAlertBox("error", "Xóa sản phẩm thất bại!");
     }
-  }
+  };
 
   return (
     <section
@@ -175,7 +187,13 @@ const Products = () => {
         <div className="w-full px-5 flex justify-between mb-3 items-center">
           <h2 className="text-[18px] font-bold">Danh sách sản phẩm</h2>
           <div className="flex items-center gap-3">
-            <Button onClick={deleteMultipleProduct} variant="contained" className="btn-border !shadow-none !h-[34px]">Xóa</Button>
+            <Button
+              onClick={deleteMultipleProduct}
+              variant="contained"
+              className="btn-border !shadow-none !h-[34px]"
+            >
+              Xóa
+            </Button>
             <Button
               className="btn-primary"
               onClick={() =>
@@ -191,7 +209,7 @@ const Products = () => {
         </div>
 
         <div className="w-full mt-4 px-5 flex items-end justify-between gap-4 mb-6">
-          <div className="flex flex-col w-[25%] gap-2">
+          <div className="flex flex-col w-[22%] gap-2">
             <label className="text-[14px] font-[600]">Theo danh mục lớn</label>
 
             {context?.catData?.length !== 0 && (
@@ -213,7 +231,7 @@ const Products = () => {
               </Select>
             )}
           </div>
-          <div className="flex flex-col w-[25%] gap-2">
+          <div className="flex flex-col w-[22%] gap-2">
             <label className="text-[14px] font-[600]">
               Theo danh mục cấp 2
             </label>
@@ -241,7 +259,7 @@ const Products = () => {
               </Select>
             )}
           </div>
-          <div className="flex flex-col w-[25%] gap-2">
+          <div className="flex flex-col w-[22%] gap-2">
             <label className="text-[14px] font-[600]">
               Theo danh mục cấp 3
             </label>
@@ -274,7 +292,7 @@ const Products = () => {
               </Select>
             )}
           </div>
-          <div className="searchBox h-[40px] w-[25%] bg-[#f2f2f2] rounded-[8px] relative">
+          <div className="searchBox h-[40px] w-[34%] bg-[#f2f2f2] rounded-[8px] relative">
             <input
               type="text"
               placeholder="Tìm kiếm..."

@@ -1,5 +1,5 @@
 import { Button, Rating } from "@mui/material";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { IoMdCloudUpload } from "react-icons/io";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -9,7 +9,7 @@ import { IoMdClose } from "react-icons/io";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { myContext } from "../../App";
-import { deleteImages, postData } from "../../utils/api";
+import { deleteImages, fetchDataFromApi, postData } from "../../utils/api";
 import { useNavigate } from "react-router";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -57,7 +57,23 @@ const AddProduct = () => {
   const [productThirdSubCategory, setProductThirdSubCategory] = useState("");
   const [productFeatured, setProductFeatured] = useState("");
   const [productFlavor, setProductFlavor] = useState([]);
+  const [productFlavorData, setProductFlavorData] = useState([]);
   const [productWeight, setProductWeight] = useState([]);
+  const [productWeightData, setProductWeightData] = useState([]);
+
+  useEffect(() => {
+    fetchDataFromApi(`/api/product/productFlavor/get`).then((res) => {
+      if (res?.error === false) {
+        setProductFlavorData(res?.data);
+      }
+    });
+
+    fetchDataFromApi(`/api/product/productWeight/get`).then((res) => {
+      if (res?.error === false) {
+        setProductWeightData(res?.data);
+      }
+    });
+  }, []);
 
   const handleChangeProductCategory = (event) => {
     setProductCategory(event.target.value);
@@ -163,7 +179,7 @@ const AddProduct = () => {
       setIsLoading(false);
       return false;
     }
-    
+
     if (formFields.catId === "") {
       context.openAlertBox("error", "Vui lòng chọn danh mục sản phẩm!");
       setIsLoading(false);
@@ -175,7 +191,7 @@ const AddProduct = () => {
       setIsLoading(false);
       return false;
     }
-    
+
     if (formFields.price === "") {
       context.openAlertBox("error", "Vui lòng nhập giá sản phẩm!");
       setIsLoading(false);
@@ -195,13 +211,19 @@ const AddProduct = () => {
     }
 
     if (formFields.discount === "") {
-      context.openAlertBox("error", "Vui lòng nhập phần trăm giảm giá sản phẩm!");
+      context.openAlertBox(
+        "error",
+        "Vui lòng nhập phần trăm giảm giá sản phẩm!"
+      );
       setIsLoading(false);
       return false;
     }
 
     if (formFields.rating === "") {
-      context.openAlertBox("error", "Vui lòng chọn số sao đánh giá của sản phẩm!");
+      context.openAlertBox(
+        "error",
+        "Vui lòng chọn số sao đánh giá của sản phẩm!"
+      );
       setIsLoading(false);
       return false;
     }
@@ -482,20 +504,26 @@ const AddProduct = () => {
               >
                 Hương vị
               </label>
-              <Select
-                multiple
-                labelId="demo-simple-select-label"
-                id="flavor"
-                value={productFlavor}
-                label="productFlavor"
-                onChange={handleChangeProductFlavor}
-                size="small"
-                MenuProps={MenuProps}
-              >
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
-              </Select>
+              {productFlavorData?.length !== 0 && (
+                <Select
+                  multiple
+                  labelId="demo-simple-select-label"
+                  id="flavor"
+                  value={productFlavor}
+                  label="productFlavor"
+                  onChange={handleChangeProductFlavor}
+                  size="small"
+                  MenuProps={MenuProps}
+                >
+                  {productFlavorData?.map((item, index) => {
+                    return (
+                      <MenuItem key={index} value={item?.name}>
+                        {item?.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              )}
             </div>
 
             <div className="w-[33%] flex flex-col">
@@ -505,19 +533,26 @@ const AddProduct = () => {
               >
                 Cân nặng
               </label>
-              <Select
-                multiple
-                labelId="demo-simple-select-label"
-                id="weight"
-                value={productWeight}
-                label="productWeight"
-                onChange={handleChangeProductWeight}
-                size="small"
-              >
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
-              </Select>
+              {productWeightData?.length !== 0 && (
+                <Select
+                  multiple
+                  labelId="demo-simple-select-label"
+                  id="weight"
+                  value={productWeight}
+                  label="productWeight"
+                  onChange={handleChangeProductWeight}
+                  size="small"
+                  MenuProps={MenuProps}
+                >
+                  {productWeightData?.map((item, index) => {
+                    return (
+                      <MenuItem key={index} value={item?.name}>
+                        {item?.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              )}
             </div>
           </div>
 

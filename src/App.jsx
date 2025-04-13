@@ -21,6 +21,8 @@ import { fetchDataFromApi } from "./utils/api";
 import { useEffect } from "react";
 import Profile from "./pages/Profile";
 import ProductDetails from "./pages/Products/productDetails";
+import AddFlavor from "./pages/Products/addFlavor";
+import AddWeight from "./pages/Products/addWeight";
 
 const myContext = createContext();
 
@@ -202,6 +204,36 @@ function App() {
             <div className="content-main flex">
               <Sidebar />
               <ProductDetails />
+            </div>
+          </section>
+        </>
+      ),
+    },
+    {
+      path: "/products/add-flavor",
+      exact: true,
+      element: (
+        <>
+          <section className="main">
+            <Header />
+            <div className="content-main flex">
+              <Sidebar />
+              <AddFlavor />
+            </div>
+          </section>
+        </>
+      ),
+    },
+    {
+      path: "/products/add-weight",
+      exact: true,
+      element: (
+        <>
+          <section className="main">
+            <Header />
+            <div className="content-main flex">
+              <Sidebar />
+              <AddWeight />
             </div>
           </section>
         </>
