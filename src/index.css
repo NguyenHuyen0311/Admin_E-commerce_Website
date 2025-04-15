@@ -131,3 +131,7 @@ button .MuiCircularProgress-root {
   transform: rotate(90deg);
   font-size: 15px;
 }
+
+.rsw-ce {
+  min-height: 200px !important;
+}

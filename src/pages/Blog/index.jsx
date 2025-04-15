@@ -14,16 +14,13 @@ import TablePagination from "@mui/material/TablePagination";
 import TooltipMUI from "@mui/material/Tooltip";
 import { IoPencil, IoTrash } from "react-icons/io5";
 import { myContext } from "../../App";
-import {
-  deleteData,
-  fetchDataFromApi,
-} from "../../utils/api";
+import { deleteData, fetchDataFromApi } from "../../utils/api";
 import { useEffect } from "react";
 
-const HomeSliderBanners = () => {
+const BlogList = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
-  const [slidesData, setSlidesData] = useState([]);
+  const [blogData, setBlogData] = useState([]);
 
   const context = useContext(myContext);
 
@@ -32,8 +29,8 @@ const HomeSliderBanners = () => {
   }, [context?.isOpenFullScreenPanel]);
 
   const getData = () => {
-    fetchDataFromApi("/api/homeSlider").then((res) => {
-      setSlidesData(res?.data);
+    fetchDataFromApi("/api/blog").then((res) => {
+      setBlogData(res?.blogs);
     });
   };
 
@@ -46,9 +43,9 @@ const HomeSliderBanners = () => {
     setPage(0);
   };
 
-  const deleteSlide = (id) => {
-    deleteData(`/api/homeSlider/${id}`).then((res) => {
-      context.openAlertBox("success", "Xóa ảnh quảng cáo thành công!");
+  const deleteBlog = (id) => {
+    deleteData(`/api/blog/${id}`).then((res) => {
+      context.openAlertBox("success", "Xóa bài viết thành công!");
       getData();
     });
   };
@@ -63,18 +60,18 @@ const HomeSliderBanners = () => {
     >
       <div className="card mt-10 my-5 bg-[#fff] py-5 rounded-md shadow-md">
         <div className="w-full px-5 flex justify-between mb-3 items-center">
-          <h2 className="text-[18px] font-bold">Danh sách ảnh quảng cáo</h2>
+          <h2 className="text-[18px] font-bold">Danh sách bài viết</h2>
           <div className="flex items-center gap-3">
             <Button
               className="btn-primary"
               onClick={() =>
                 context.setIsOpenFullScreenPanel({
                   open: true,
-                  model: "Thêm Ảnh Quảng Cáo",
+                  model: "Thêm Bài Viết",
                 })
               }
             >
-              Thêm Ảnh Quảng Cáo
+              Thêm Bài Viết
             </Button>
           </div>
         </div>
@@ -88,6 +85,14 @@ const HomeSliderBanners = () => {
             <TableHead>
               <TableRow className="bg-gray-100">
                 <TableCell className="border border-gray-300 whitespace-nowrap !text-center !text-[12px] uppercase !font-[700]">
+                  Tiêu đề
+                </TableCell>
+
+                <TableCell className="border border-gray-300 whitespace-nowrap !text-center !text-[12px] uppercase !font-[700]">
+                  Mô Tả
+                </TableCell>
+
+                <TableCell className="border border-gray-300 whitespace-nowrap !text-center !text-[12px] uppercase !font-[700]">
                   Hình ảnh
                 </TableCell>
 
@@ -98,25 +103,37 @@ const HomeSliderBanners = () => {
             </TableHead>
 
             <TableBody>
-              {slidesData?.length !== 0 &&
-                slidesData?.map((item, index) => {
+              {blogData?.length !== 0 &&
+                blogData?.map((item, index) => {
                   return (
                     <TableRow key={index}>
-                      <TableCell className="border border-gray-300 !text-center w-[70%]">
+                      <TableCell className="border !font-semibold border-gray-300 whitespace-nowrap !text-center">
+                        {item?.title}
+                      </TableCell>
+                      <TableCell className="border border-gray-300">
+                        <div className="line-clamp-3 text-ellipsis" dangerouslySetInnerHTML={{ __html: item?.description}} />
+                      </TableCell>
+                      <TableCell className="border border-gray-300 !text-center">
                         <div className="flex justify-center items-center">
                           <img
                             src={item?.images[0]}
-                            alt="Sản phẩm"
-                            className="w-[350px] h-[100px] object-cover rounded-md cursor-pointer"
+                            alt={item?.title}
+                            className="w-[150px] h-[150px] !min-w-[150px] object-cover rounded-md cursor-pointer"
                           />
                         </div>
                       </TableCell>
 
-                      <TableCell className="border border-gray-300 whitespace-nowrap !text-center w-[30%]">
+                      <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
                         <div className="flex items-center justify-center gap-2">
                           <TooltipMUI title="Sửa">
                             <Button
-                              onClick={() => editSlide(item?._id)}
+                              onClick={() =>
+                                context?.setIsOpenFullScreenPanel({
+                                  open: true,
+                                  model: "Sửa Bài Viết",
+                                  id: item?._id,
+                                })
+                              }
                               style={{ minWidth: "35px" }}
                               className="!w-[35px] !h-[35px] flex items-center justify-center !min-w-[35px] !rounded-full hover:!bg-[#f1f1f1]"
                             >
@@ -125,7 +142,7 @@ const HomeSliderBanners = () => {
                           </TooltipMUI>
                           <TooltipMUI title="Xóa">
                             <Button
-                              onClick={() => deleteSlide(item?._id)}
+                              onClick={() => deleteBlog(item?._id)}
                               style={{ minWidth: "35px" }}
                               className="!w-[35px] !h-[35px] flex items-center justify-center !min-w-[35px] !rounded-full hover:!bg-[#f1f1f1]"
                             >
@@ -141,21 +158,25 @@ const HomeSliderBanners = () => {
           </Table>
         </TableContainer>
 
-        <div className="w-full flex items-center justify-end px-5 mt-5">
-          <Pagination count={10} />
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
-            component="div"
-            count={10}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </div>
+        {
+          blogData?.totalPages > 1 && (
+            <div className="w-full flex items-center justify-end px-5 mt-5">
+              <Pagination count={10} />
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 100]}
+                component="div"
+                count={blogData?.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </div>
+          )
+        }
       </div>
     </section>
   );
 };
 
-export default HomeSliderBanners;
+export default BlogList;

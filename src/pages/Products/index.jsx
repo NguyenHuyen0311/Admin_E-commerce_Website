@@ -166,7 +166,6 @@ const Products = () => {
       deleteMultipleData(`/api/product/deleteMultipleProducts`, {
         ids: sortedIds,
       }).then((res) => {
-        console.log(res);
         getProducts();
         context.openAlertBox("success", "Xóa sản phẩm thành công!");
       });
@@ -355,6 +354,7 @@ const Products = () => {
               {productData?.length !== 0 &&
                 productData
                   ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  ?.reverse()
                   ?.map((product, index) => {
                     return (
                       <TableRow key={index}>
