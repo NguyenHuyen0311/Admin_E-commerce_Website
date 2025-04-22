@@ -47,8 +47,6 @@ function Profile() {
         mobile: context?.userData?.mobile,
       });
 
-      console.log(context?.userData);
-
       setChangePassword({
         email: context?.userData?.email,
       });

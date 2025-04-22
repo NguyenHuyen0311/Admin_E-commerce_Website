@@ -267,6 +267,7 @@ function App() {
       });
     } else {
       setIsLogin(false);
+      setUserData([]);
     }
   }, [isLogin]);
 

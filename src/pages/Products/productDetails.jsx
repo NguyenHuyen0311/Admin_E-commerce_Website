@@ -38,8 +38,7 @@ const ProductDetails = () => {
       }
     });
   }, []);
-  console.log("Rating:", product?.rating);
-
+  
   return (
     <section
       className={`mt-[80px] transition-all ${

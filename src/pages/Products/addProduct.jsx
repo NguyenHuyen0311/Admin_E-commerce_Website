@@ -12,6 +12,8 @@ import { myContext } from "../../App";
 import { deleteImages, fetchDataFromApi, postData } from "../../utils/api";
 import { useNavigate } from "react-router";
 import CircularProgress from "@mui/material/CircularProgress";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -60,6 +62,7 @@ const AddProduct = () => {
   const [productFlavorData, setProductFlavorData] = useState([]);
   const [productWeight, setProductWeight] = useState([]);
   const [productWeightData, setProductWeightData] = useState([]);
+  const [html, setHtml] = useState("");
 
   useEffect(() => {
     fetchDataFromApi(`/api/product/productFlavor/get`).then((res) => {
@@ -134,6 +137,11 @@ const AddProduct = () => {
         [name]: value,
       };
     });
+  };
+
+  const onChangeDescription = (e) => {
+    setHtml(e.target.value);
+    formFields.description = e.target.value;
   };
 
   const onChangeRating = (e) => {
@@ -273,18 +281,19 @@ const AddProduct = () => {
             />
           </div>
 
-          <div className="w-full mb-3">
+          <div className="w-full mb-[60px]">
             <label className="text-black/90 font-medium" htmlFor="description">
               Mô tả sản phẩm
             </label>
-            <textarea
-              id="description"
-              name="description"
-              value={formFields.description}
-              disabled={isLoading === true ? true : false}
-              onChange={onChangeInput}
-              className="w-full mt-2 h-[100px] border border-gray-300 rounded-md focus:border-gray-500 focus:outline-none px-2"
-            ></textarea>
+            <ReactQuill
+              theme="snow"
+              value={html}
+              onChange={(value) => {
+                setHtml(value);
+                setFormFields({ ...formFields, description: value });
+              }}
+              className="mt-2 h-[200px] rounded-md"
+            />
           </div>
 
           <div className="w-full mb-3 flex items-center gap-4">

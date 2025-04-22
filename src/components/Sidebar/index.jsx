@@ -274,12 +274,15 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li className="w-full">
-                <Link to="/blog/add">
-                  <Button className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
-                    <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
-                    Thêm bài viết
-                  </Button>
-                </Link>
+                <Button onClick={() =>
+                    context.setIsOpenFullScreenPanel({
+                      open: true,
+                      model: "Thêm Bài Viết",
+                    })
+                  } className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
+                  <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
+                  Thêm bài viết
+                </Button>
               </li>
             </ul>
           </Collapse>

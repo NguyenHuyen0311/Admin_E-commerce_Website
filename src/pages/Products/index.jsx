@@ -333,6 +333,9 @@ const Products = () => {
                   Danh mục con
                 </TableCell>
                 <TableCell className="border border-gray-300 whitespace-nowrap !text-center !text-[12px] uppercase !font-[700]">
+                  Mô tả
+                </TableCell>
+                <TableCell className="border border-gray-300 whitespace-nowrap !text-center !text-[12px] uppercase !font-[700]">
                   Giá
                 </TableCell>
                 <TableCell className="border border-gray-300 whitespace-nowrap !text-center !text-[12px] uppercase !font-[700]">
@@ -402,6 +405,14 @@ const Products = () => {
                         </TableCell>
                         <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
                           {product?.subCatName}
+                        </TableCell>
+                        <TableCell className="border border-gray-300">
+                          <div
+                            className="line-clamp-3 text-ellipsis"
+                            dangerouslySetInnerHTML={{
+                              __html: product?.description,
+                            }}
+                          />
                         </TableCell>
                         <TableCell className="border border-gray-300 whitespace-nowrap !text-center">
                           <div className="flex flex-col gap-1">
