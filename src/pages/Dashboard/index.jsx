@@ -32,7 +32,9 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  Bar,
   ResponsiveContainer,
+  BarChart,
 } from "recharts";
 import {
   deleteData,
@@ -42,85 +44,12 @@ import {
 import { Link } from "react-router";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
+import SearchBox from "../../components/SearchBox";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
 const Dashboard = () => {
-  const [chart1Data, setChart1Data] = useState([
-    {
-      name: "Tháng 1",
-      users: 4000,
-      sales: 2400,
-      amt: 2400,
-    },
-    {
-      name: "Tháng 2",
-      users: 3000,
-      sales: 1398,
-      amt: 2210,
-    },
-    {
-      name: "Tháng 3",
-      users: 2000,
-      sales: 9800,
-      amt: 2290,
-    },
-    {
-      name: "Tháng 4",
-      users: 2780,
-      sales: 3908,
-      amt: 2000,
-    },
-    {
-      name: "Tháng 5",
-      users: 1890,
-      sales: 4800,
-      amt: 2181,
-    },
-    {
-      name: "Tháng 6",
-      users: 2390,
-      sales: 3800,
-      amt: 2500,
-    },
-    {
-      name: "Tháng 7",
-      users: 3490,
-      sales: 4600,
-      amt: 2100,
-    },
-    {
-      name: "Tháng 8",
-      users: 3490,
-      sales: 900,
-      amt: 2100,
-    },
-    {
-      name: "Tháng 9",
-      users: 3490,
-      sales: 2300,
-      amt: 2100,
-    },
-    {
-      name: "Tháng 10",
-      users: 2490,
-      sales: 1300,
-      amt: 2100,
-    },
-    {
-      name: "Tháng 11",
-      users: 1490,
-      sales: 400,
-      amt: 2100,
-    },
-    {
-      name: "Tháng 12",
-      users: 6490,
-      sales: 300,
-      amt: 2100,
-    },
-  ]);
-
+  const [chartData, setChartData] = useState([]);
   const [categoryL1Fil, setCategoryL1Fil] = useState("");
   const [categoryL2Fil, setCategoryL2Fil] = useState("");
   const [categoryL3Fil, setCategoryL3Fil] = useState("");
@@ -129,7 +58,15 @@ const Dashboard = () => {
   const [productData, setProductData] = useState([]);
   const [sortedIds, setSortedIds] = useState([]);
   const [expandedRows, setExpandedRows] = useState([]);
-  const [orders, setOrders] = useState([]);
+
+  const [pageOrder, setPageOrder] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [ordersData, setOrdersData] = useState([]);
+  const [totalOrdersData, setTotalOrdersData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [users, setUsers] = useState([]);
+  const [allReviews, setAllReviews] = useState([]);
 
   const context = useContext(myContext);
 
@@ -140,12 +77,59 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchDataFromApi("/api/order/order-list").then((res) => {
+    fetchDataFromApi(`/api/order/order-list?page=${pageOrder}&perPage=5`).then(
+      (res) => {
+        console.log("Total Pages: ", res?.totalPages);
+        if (res?.error === false) {
+          setOrdersData(res?.data);
+          setTotalPages(res?.totalPages);
+        }
+      }
+    );
+
+    fetchDataFromApi(`/api/order/order-list`).then((res) => {
       if (res?.error === false) {
-        setOrders(res?.data);
+        setTotalOrdersData(res);
       }
     });
-  }, []);
+  }, [pageOrder]);
+
+  useEffect(() => {
+    if (searchQuery !== "") {
+      const filteredOrders = totalOrdersData?.data?.filter(
+        (order) =>
+          order?._id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          order?.userId?.name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order?.delivery_address?.name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order?.userId?.mobile
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order?.delivery_address?.mobile
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order?.delivery_address?.address_details
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order?.userId?.email
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          order?.createdAt.includes(searchQuery)
+      );
+      setOrdersData(filteredOrders);
+    } else {
+      fetchDataFromApi(
+        `/api/order/order-list?page=${pageOrder}&perPage=5`
+      ).then((res) => {
+        if (res?.error === false) {
+          setOrdersData(res?.data);
+        }
+      });
+    }
+  }, [searchQuery, pageOrder]);
 
   useEffect(() => {
     getProducts();
@@ -276,6 +260,60 @@ const Dashboard = () => {
     }
   };
 
+  useEffect(() => {
+    getTotalSalesByYear();
+
+    fetchDataFromApi("/api/user/getAllUsers").then((res) => {
+      if (res?.error === false) {
+        setUsers(res?.users);
+      }
+    });
+
+    fetchDataFromApi("/api/user/getAllReviews").then((res) => {
+      if (res?.error === false) {
+        setAllReviews(res?.reviews);
+      }
+    });
+  }, []);
+
+  const getTotalUsersByYear = () => {
+    fetchDataFromApi("/api/order/users").then((res) => {
+      const users = [];
+      res?.TotalUsers?.length !== 0 &&
+        res?.TotalUsers?.map((item) => {
+          users.push({
+            name: item?.name,
+            TotalUsers: parseInt(item?.TotalUsers),
+          });
+        });
+
+      const uniqueArr = users.filter(
+        (obj, index, self) =>
+          index === self.findIndex((t) => t.name === obj.name)
+      );
+      setChartData(uniqueArr);
+    });
+  };
+
+  const getTotalSalesByYear = () => {
+    fetchDataFromApi("/api/order/sales").then((res) => {
+      const sales = [];
+      res?.monthlySales?.length !== 0 &&
+        res?.monthlySales?.map((item) => {
+          sales.push({
+            name: item?.name,
+            TotalSales: parseInt(item?.TotalSales),
+          });
+        });
+
+      const uniqueArr = sales.filter(
+        (obj, index, self) =>
+          index === self.findIndex((t) => t.name === obj.name)
+      );
+      setChartData(uniqueArr);
+    });
+  };
+
   return (
     <>
       <div
@@ -310,7 +348,17 @@ const Dashboard = () => {
           <img src="/banner-welcome.webp" className="w-[250px]" />
         </div>
 
-        <DashboardBoxes />
+        {productData?.length !== 0 &&
+          users?.length !== 0 &&
+          allReviews?.length !== 0 && (
+            <DashboardBoxes
+              orders={totalOrdersData?.data?.length}
+              products={productData?.length}
+              users={users?.length}
+              category={context?.catData?.length}
+              reviews={allReviews?.length}
+            />
+          )}
 
         <div className="card my-5 bg-[#fff] py-5 rounded-md shadow-md">
           <div className="w-full px-5 flex justify-between mb-3 items-center">
@@ -623,25 +671,21 @@ const Dashboard = () => {
         </div>
 
         <div className="card my-5 bg-[#fff] py-5 rounded-md shadow-md">
-          <div className="w-full px-5 flex justify-between mb-6">
-            <h2 className="text-[16px] font-[600] w-[70%]">Đơn hàng gần đây</h2>
-            <div className="searchBox h-[40px] w-[30%] bg-[#f2f2f2] rounded-[8px] relative">
-              <input
-                type="text"
-                placeholder="Tìm kiếm..."
-                className="w-full !h-[36px] pl-[15px] pr-[35px] bg-[#f2f2f2] rounded-[5px] focus:outline-none text-[14px] placeholder:text-[12px]"
+          <div className="flex items-center w-full px-5">
+            <div className="w-full pl-5">
+              <h2 className="text-[18px] font-bold">Đơn hàng gần đây</h2>
+            </div>
+
+            <div className="searchBox w-[45%] bg-[#f2f2f2] rounded-[8px] relative">
+              <SearchBox
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                setPageOrder={setPageOrder}
               />
-              <Button className="btn-primary transition-all !absolute top-[0] right-[0] !h-[39px] w-[36px] flex items-center justify-center">
-                <IoSearch className="text-white size-4" />
-              </Button>
             </div>
           </div>
 
-          <TableContainer
-            component={Paper}
-            className="mt-4 shadow-md"
-            sx={{ maxHeight: 500, overflowY: "auto" }}
-          >
+          <TableContainer component={Paper} className="mt-4 shadow-md">
             <Table>
               <TableHead>
                 <TableRow className="bg-gray-100">
@@ -680,8 +724,8 @@ const Dashboard = () => {
               </TableHead>
 
               <TableBody>
-                {orders?.length !== 0 &&
-                  orders?.map((order, index) => {
+                {ordersData?.length !== 0 &&
+                  ordersData?.map((order, index) => {
                     return (
                       <>
                         <React.Fragment key={order._id}>
@@ -707,10 +751,12 @@ const Dashboard = () => {
                                 : "Thanh toán khi nhận hàng"}
                             </TableCell>
                             <TableCell className="border whitespace-nowrap !text-center">
-                              {order?.delivery_address?.name}
+                              {order?.delivery_address?.name ||
+                                order?.userId?.name}
                             </TableCell>
                             <TableCell className="border whitespace-nowrap !text-center">
-                              {order?.delivery_address?.mobile}
+                              {order?.delivery_address?.mobile ||
+                                order?.userId?.mobile}
                             </TableCell>
                             <TableCell className="border whitespace-nowrap !text-center">
                               {order?.delivery_address?.address_details}
@@ -725,20 +771,7 @@ const Dashboard = () => {
                               {order?.userId?._id}
                             </TableCell>
                             <TableCell className="border whitespace-nowrap !text-center">
-                              {/* <Select
-                                labelId="demo-simple-select-standard-label"
-                                id="demo-simple-select-standard"
-                                value={orderStatusFil}
-                                onChange={handleChangeOrderStatusFil}
-                                label="CategoryL1"
-                                size="small"
-                                className="rounded !h-[32px] min-w-[120px]"
-                              >
-                                <MenuItem value="">Không</MenuItem>
-                                <MenuItem value={10}>Xác nhận</MenuItem>
-                                <MenuItem value={20}>Đồ mặn</MenuItem>
-                                <MenuItem value={30}>Đồ khỏe mạnh</MenuItem>
-                              </Select> */}
+                              <Badge status={order?.order_status} />
                             </TableCell>
                             <TableCell className="border whitespace-nowrap !text-center">
                               {new Date(order?.createdAt).toLocaleDateString(
@@ -822,6 +855,18 @@ const Dashboard = () => {
               </TableBody>
             </Table>
           </TableContainer>
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center mt-7">
+              <Pagination
+                onChange={(e, value) => setPageOrder(value)}
+                count={totalPages}
+                page={pageOrder}
+                showFirstButton
+                showLastButton
+              />
+            </div>
+          )}
         </div>
 
         <div className="card my-5 pr-3 w-full h-[400px] bg-[#fff] py-5 pb-20 rounded-md shadow-md">
@@ -830,49 +875,119 @@ const Dashboard = () => {
           </h2>
 
           <div className="flex items-center gap-3 px-5 mb-5">
-            <span className="flex items-center gap-2 cursor-pointer">
-              <span className="block w-[10px] h-[10px] rounded-full bg-green-600"></span>
+            <span
+              className="flex items-center gap-2 cursor-pointer"
+              onClick={getTotalUsersByYear}
+            >
+              <span className="block w-[10px] h-[10px] rounded-full bg-[#8884d8]"></span>
               Tổng số người dùng
             </span>
-            <span className="flex items-center gap-2 cursor-pointer">
-              <span className="block w-[10px] h-[10px] rounded-full bg-blue-600"></span>
+            <span
+              className="flex items-center gap-2 cursor-pointer"
+              onClick={getTotalSalesByYear}
+            >
+              <span className="block w-[10px] h-[10px] rounded-full bg-[#82ca9d]"></span>
               Tổng số tiền
             </span>
           </div>
 
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              width={500}
-              height={300}
-              data={chart1Data}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <CartesianGrid stroke="none" strokeDasharray="3 3" />
-              <XAxis tick={{ fontSize: 13 }} dataKey="name" />
-              <YAxis tick={{ fontSize: 13 }} />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="users"
-                stroke="#8884d8"
-                strokeWidth={2}
-                activeDot={{ r: 7 }}
-              />
-              <Line
-                type="monotone"
-                activeDot={{ r: 7 }}
-                strokeWidth={2}
-                dataKey="sales"
-                stroke="#82ca9d"
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          {chartData?.length !== 0 && (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart
+                width={500}
+                height={300}
+                data={chartData}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <XAxis
+                  dataKey="name"
+                  scale="point"
+                  padding={{ left: 10, right: 10 }}
+                  tick={{ fontSize: 12 }}
+                  label={{ position: "insideBottom", fontSize: 14 }}
+                  style={{ fill: context?.theme === "dark" ? "white" : "#000" }}
+                />
+                <YAxis
+                  tick={{ fontSize: 12 }}
+                  label={{ position: "insideBottom", fontSize: 14 }}
+                  style={{ fill: context?.theme === "dark" ? "white" : "#000" }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#071739",
+                    color: "white",
+                  }}
+                  labelStyle={{ color: "yellow" }}
+                  itemStyle={{ color: "cyan" }}
+                  cursor={{ fill: "white" }}
+                />
+                <Legend />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  horizontal={false}
+                  vertical={false}
+                />
+                <Bar dataKey="TotalSales" fill="#8884d8" stackId="a" />
+                <Bar dataKey="TotalUsers" fill="#82ca9d" stackId="b" />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+
+          {/* {chartData?.length !== 0 && (
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart
+                data={chartData}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 12 }}
+                  label={{ position: "insideBottom", fontSize: 14 }}
+                  style={{ fill: context?.theme === "dark" ? "white" : "#000" }}
+                />
+                <YAxis
+                  tick={{ fontSize: 12 }}
+                  label={{ position: "insideBottom", fontSize: 14 }}
+                  style={{ fill: context?.theme === "dark" ? "white" : "#000" }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#071739",
+                    color: "white",
+                  }}
+                  labelStyle={{ color: "yellow" }}
+                  itemStyle={{ color: "cyan" }}
+                  cursor={{ stroke: "white", strokeWidth: 1 }}
+                />
+                <Legend />
+                <CartesianGrid strokeDasharray="3 3" />
+                <Line
+                  type="monotone"
+                  dataKey="TotalSales"
+                  stroke="#8884d8"
+                  strokeWidth={2}
+                  activeDot={{ r: 6 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="TotalUsers"
+                  stroke="#82ca9d"
+                  strokeWidth={2}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )} */}
         </div>
       </div>
     </>

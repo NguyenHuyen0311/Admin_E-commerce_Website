@@ -13,7 +13,7 @@ import { IoGift } from "react-icons/io5";
 import { RiProductHuntFill } from "react-icons/ri";
 import { MdCategory } from "react-icons/md";
 
-const DashboardBoxes = () => {
+const DashboardBoxes = (props) => {
   return (
     <div>
       <Swiper
@@ -28,7 +28,7 @@ const DashboardBoxes = () => {
             <FaUsers className='text-[30px] !min-w-[30px] w-[20%] text-white' />
             <div className='info w-[60%] text-white'>
                 <h3>Số lượng người dùng</h3>
-                <b className='text-[20px]'>10</b>
+                <b className='text-[20px]'>{props?.users}</b>
             </div>
             <IoStatsChartSharp className='text-[30px] !min-w-[30px] w-[20%] text-white' />
           </div>
@@ -39,7 +39,7 @@ const DashboardBoxes = () => {
             <IoGift className='text-[30px] !min-w-[30px] w-[20%] text-white' />
             <div className='info w-[60%] text-white'>
                 <h3>Số lượng đơn hàng</h3>
-                <b className='text-[20px]'>100</b>
+                <b className='text-[20px]'>{props?.orders}</b>
             </div>
             <FaChartPie className='text-[30px] !min-w-[30px] w-[20%] text-white' />
           </div>
@@ -50,7 +50,7 @@ const DashboardBoxes = () => {
             <RiProductHuntFill className='text-[30px] !min-w-[30px] w-[20%] text-white' />
             <div className='info w-[60%] text-white'>
                 <h3>Số lượng sản phẩm</h3>
-                <b className='text-[20px]'>80</b>
+                <b className='text-[20px]'>{props?.products}</b>
             </div>
             <FaChartLine className='text-[30px] !min-w-[30px] w-[20%] text-white' />
           </div>
@@ -61,7 +61,7 @@ const DashboardBoxes = () => {
             <MdCategory className='text-[30px] !min-w-[30px] w-[20%] text-white' />
             <div className='info w-[60%] text-white'>
                 <h3>Số lượng danh mục</h3>
-                <b className='text-[20px]'>25</b>
+                <b className='text-[20px]'>{props?.category}</b>
             </div>
             <FiBarChart2 className='text-[30px] !min-w-[30px] w-[20%] text-white' />
           </div>
