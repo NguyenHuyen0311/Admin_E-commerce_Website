@@ -79,7 +79,6 @@ const Dashboard = () => {
   useEffect(() => {
     fetchDataFromApi(`/api/order/order-list?page=${pageOrder}&perPage=5`).then(
       (res) => {
-        console.log("Total Pages: ", res?.totalPages);
         if (res?.error === false) {
           setOrdersData(res?.data);
           setTotalPages(res?.totalPages);
@@ -877,17 +876,17 @@ const Dashboard = () => {
           <div className="flex items-center gap-3 px-5 mb-5">
             <span
               className="flex items-center gap-2 cursor-pointer"
-              onClick={getTotalUsersByYear}
+              onClick={getTotalSalesByYear}
             >
               <span className="block w-[10px] h-[10px] rounded-full bg-[#8884d8]"></span>
-              Tổng số người dùng
+              Tổng số tiền
             </span>
             <span
               className="flex items-center gap-2 cursor-pointer"
-              onClick={getTotalSalesByYear}
+              onClick={getTotalUsersByYear}
             >
               <span className="block w-[10px] h-[10px] rounded-full bg-[#82ca9d]"></span>
-              Tổng số tiền
+              Tổng số người dùng
             </span>
           </div>
 

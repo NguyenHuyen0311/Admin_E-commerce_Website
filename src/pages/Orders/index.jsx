@@ -53,7 +53,6 @@ const Orders = () => {
   useEffect(() => {
     fetchDataFromApi(`/api/order/order-list?page=${pageOrder}&perPage=5`).then(
       (res) => {
-        console.log("Total Pages: ", res?.totalPages);
         if (res?.error === false) {
           setOrdersData(res?.data);
           setTotalPages(res?.totalPages);
