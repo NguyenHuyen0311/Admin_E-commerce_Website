@@ -7,21 +7,18 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Checkbox,
   Button,
 } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
 import TablePagination from "@mui/material/TablePagination";
 import TooltipMUI from "@mui/material/Tooltip";
-import { IoSearch, IoTrash } from "react-icons/io5";
+import { IoTrash } from "react-icons/io5";
 import { myContext } from "../../App";
 import { MdOutlineMarkEmailRead } from "react-icons/md";
 import { FaPhoneAlt } from "react-icons/fa";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { fetchDataFromApi } from "../../utils/api";
 import SearchBox from "../../components/SearchBox";
-
-const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
 const Users = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -176,7 +173,6 @@ const Users = () => {
         </TableContainer>
 
         <div className="w-full flex items-center justify-end px-5 mt-5">
-          <Pagination count={10} />
           <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component="div"

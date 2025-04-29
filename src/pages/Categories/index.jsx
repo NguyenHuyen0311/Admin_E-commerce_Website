@@ -9,7 +9,6 @@ import {
   Paper,
   Button,
 } from "@mui/material";
-import Pagination from "@mui/material/Pagination";
 import TablePagination from "@mui/material/TablePagination";
 import TooltipMUI from "@mui/material/Tooltip";
 import { IoPencil, IoTrash } from "react-icons/io5";
@@ -157,11 +156,10 @@ const Categories = () => {
         </TableContainer>
 
         <div className="w-full flex items-center justify-end px-5 mt-5">
-          <Pagination count={10} />
           <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component="div"
-            count={10}
+            count={context?.catData?.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

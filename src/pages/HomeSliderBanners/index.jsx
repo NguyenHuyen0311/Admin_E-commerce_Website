@@ -9,7 +9,6 @@ import {
   Paper,
   Button,
 } from "@mui/material";
-import Pagination from "@mui/material/Pagination";
 import TablePagination from "@mui/material/TablePagination";
 import TooltipMUI from "@mui/material/Tooltip";
 import { IoPencil, IoTrash } from "react-icons/io5";
@@ -116,7 +115,13 @@ const HomeSliderBanners = () => {
                         <div className="flex items-center justify-center gap-2">
                           <TooltipMUI title="Sửa">
                             <Button
-                              onClick={() => editSlide(item?._id)}
+                              onClick={() =>
+                                context.setIsOpenFullScreenPanel({
+                                  open: true,
+                                  model: "Sửa Ảnh Quảng Cáo",
+                                  id: item?._id,
+                                })
+                              }
                               style={{ minWidth: "35px" }}
                               className="!w-[35px] !h-[35px] flex items-center justify-center !min-w-[35px] !rounded-full hover:!bg-[#f1f1f1]"
                             >
@@ -142,11 +147,10 @@ const HomeSliderBanners = () => {
         </TableContainer>
 
         <div className="w-full flex items-center justify-end px-5 mt-5">
-          <Pagination count={10} />
           <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component="div"
-            count={10}
+            count={slidesData?.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

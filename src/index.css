@@ -91,9 +91,9 @@ button .MuiCircularProgress-root {
   height: 30px !important; 
 }
 
-.Mui-focused fieldset legend {
+/* .Mui-focused fieldset legend {
   display: none !important;
-}
+} */
 
 .zoom-product-slider .swiper-slide {
   height: auto !important;

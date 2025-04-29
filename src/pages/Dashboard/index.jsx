@@ -68,6 +68,9 @@ const Dashboard = () => {
   const [users, setUsers] = useState([]);
   const [allReviews, setAllReviews] = useState([]);
 
+  const [totalProductData, setTotalProductData] = useState([]);
+  const [searchQueryProduct, setSearchQueryProduct] = useState("");
+  
   const context = useContext(myContext);
 
   const toggleExpand = (index) => {
@@ -313,6 +316,56 @@ const Dashboard = () => {
     });
   };
 
+  useEffect(() => {
+      fetchDataFromApi(`/api/product/getAllProducts?page=1&perPage=10`).then(
+        (res) => {
+          setProductData(res?.products);
+          setTotalProductData(res?.products);
+        }
+      );
+    }, []);
+  
+    useEffect(() => {
+      if (searchQueryProduct !== "") {
+        const filteredItems = totalProductData?.filter(
+          (product) =>
+            product?._id?.toLowerCase().includes(searchQueryProduct.toLowerCase()) ||
+            product?.brand.toLowerCase().includes(searchQueryProduct.toLowerCase()) ||
+            product?.name.toLowerCase().includes(searchQueryProduct.toLowerCase()) ||
+            product?.catName.toLowerCase().includes(searchQueryProduct.toLowerCase()) ||
+            product?.subCatName
+              .toLowerCase()
+              .includes(searchQueryProduct.toLowerCase()) ||
+            product?.thirdSubCatName
+              .toLowerCase()
+              .includes(searchQueryProduct.toLowerCase()) ||
+            product?.price
+              .toString()
+              .toLowerCase()
+              .includes(searchQueryProduct.toLowerCase()) ||
+            product?.oldPrice
+              .toString()
+              .toLowerCase()
+              .includes(searchQueryProduct.toLowerCase()) ||
+            product?.discount
+              .toString()
+              .toLowerCase()
+              .includes(searchQueryProduct.toLowerCase()) ||
+            product?.rating
+              .toString()
+              .toLowerCase()
+              .includes(searchQueryProduct.toLowerCase())
+        );
+        setProductData(filteredItems);
+      } else {
+        fetchDataFromApi(`/api/product/getAllProducts`).then((res) => {
+          if (res?.error === false) {
+            setProductData(res?.products);
+          }
+        });
+      }
+    }, [searchQueryProduct]);
+
   return (
     <>
       <div
@@ -393,7 +446,7 @@ const Dashboard = () => {
               {context?.catData?.length !== 0 && (
                 <Select
                   labelId="demo-simple-select-label"
-                  id="category"
+                  id="categoryL1"
                   value={categoryL1Fil}
                   label="categoryL1Fil"
                   onChange={handleChangeCategoryL1Fil}
@@ -416,7 +469,7 @@ const Dashboard = () => {
               {context?.catData?.length !== 0 && (
                 <Select
                   labelId="demo-simple-select-label"
-                  id="category"
+                  id="categoryL2"
                   value={categoryL2Fil}
                   label="categoryL2Fil"
                   onChange={handleChangeCategoryL2Fil}
@@ -444,7 +497,7 @@ const Dashboard = () => {
               {context?.catData?.length !== 0 && (
                 <Select
                   labelId="demo-simple-select-label"
-                  id="category"
+                  id="categoryL3"
                   value={categoryL3Fil}
                   label="categoryL3Fil"
                   onChange={handleChangeCategoryL3Fil}
@@ -471,14 +524,10 @@ const Dashboard = () => {
               )}
             </div>
             <div className="searchBox h-[40px] w-[34%] bg-[#f2f2f2] rounded-[8px] relative">
-              <input
-                type="text"
-                placeholder="Tìm kiếm..."
-                className="w-full !h-[36px] pl-[15px] pr-[35px] bg-[#f2f2f2] rounded-[5px] focus:outline-none text-[14px] placeholder:text-[12px]"
+              <SearchBox
+                searchQuery={searchQueryProduct}
+                setSearchQuery={setSearchQueryProduct}
               />
-              <Button className="btn-primary transition-all !absolute top-[0] right-[0] !h-[39px] w-[36px] flex items-center justify-center">
-                <IoSearch className="text-white size-4" />
-              </Button>
             </div>
           </div>
 
@@ -656,7 +705,6 @@ const Dashboard = () => {
           </TableContainer>
 
           <div className="w-full flex items-center justify-end px-5 mt-5">
-            <Pagination count={10} />
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component="div"

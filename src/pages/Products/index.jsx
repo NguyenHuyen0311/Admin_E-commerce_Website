@@ -26,6 +26,7 @@ import {
 import { Link } from "react-router";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
+import SearchBox from "../../components/SearchBox";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -36,7 +37,9 @@ const Products = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
   const [productData, setProductData] = useState([]);
+  const [totalProductData, setTotalProductData] = useState([]);
   const [sortedIds, setSortedIds] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const context = useContext(myContext);
 
@@ -174,6 +177,56 @@ const Products = () => {
     }
   };
 
+  useEffect(() => {
+    fetchDataFromApi(`/api/product/getAllProducts?page=1&perPage=10`).then(
+      (res) => {
+        setProductData(res?.products);
+        setTotalProductData(res?.products);
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery !== "") {
+      const filteredItems = totalProductData?.filter(
+        (product) =>
+          product?._id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product?.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product?.catName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product?.subCatName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          product?.thirdSubCatName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          product?.price
+            .toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          product?.oldPrice
+            .toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          product?.discount
+            .toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          product?.rating
+            .toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+      );
+      setProductData(filteredItems);
+    } else {
+      fetchDataFromApi(`/api/product/getAllProducts`).then((res) => {
+        if (res?.error === false) {
+          setProductData(res?.products);
+        }
+      });
+    }
+  }, [searchQuery]);
+
   return (
     <section
       className={`mt-[50px] transition-all ${
@@ -292,14 +345,10 @@ const Products = () => {
             )}
           </div>
           <div className="searchBox h-[40px] w-[34%] bg-[#f2f2f2] rounded-[8px] relative">
-            <input
-              type="text"
-              placeholder="Tìm kiếm..."
-              className="w-full !h-[36px] pl-[15px] pr-[35px] bg-[#f2f2f2] rounded-[5px] focus:outline-none text-[14px] placeholder:text-[12px]"
+            <SearchBox
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
             />
-            <Button className="btn-primary transition-all !absolute top-[0] right-[0] !h-[39px] w-[36px] flex items-center justify-center">
-              <IoSearch className="text-white size-4" />
-            </Button>
           </div>
         </div>
 
@@ -486,7 +535,6 @@ const Products = () => {
         </TableContainer>
 
         <div className="w-full flex items-center justify-end px-5 mt-5">
-          <Pagination count={10} />
           <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component="div"

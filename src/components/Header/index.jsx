@@ -28,6 +28,7 @@ import Slide from "@mui/material/Slide";
 import EditProduct from "../../pages/Products/editProduct";
 import AddBlog from "../../pages/Blog/addBlog";
 import EditBlog from "../../pages/Blog/editBlog";
+import EditHomeSliderBanners from "../../pages/HomeSliderBanners/editHomeSliderBanners";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -251,6 +252,9 @@ const Header = () => {
         )}
         {context?.isOpenFullScreenPanel.model === "Thêm Ảnh Quảng Cáo" && (
           <AddHomeSliderBanners />
+        )}
+        {context?.isOpenFullScreenPanel.model === "Sửa Ảnh Quảng Cáo" && (
+          <EditHomeSliderBanners />
         )}
         {context?.isOpenFullScreenPanel.model === "Thêm Danh Mục Cha" && (
           <AddCategory />

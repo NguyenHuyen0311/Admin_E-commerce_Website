@@ -75,7 +75,6 @@ const BlogList = () => {
             </Button>
           </div>
         </div>
-
         <TableContainer
           component={Paper}
           className="mt-4 shadow-sm"
@@ -111,7 +110,12 @@ const BlogList = () => {
                         {item?.title}
                       </TableCell>
                       <TableCell className="border border-gray-300">
-                        <div className="line-clamp-3 text-ellipsis" dangerouslySetInnerHTML={{ __html: item?.description}} />
+                        <div
+                          className="line-clamp-3 text-ellipsis"
+                          dangerouslySetInnerHTML={{
+                            __html: item?.description,
+                          }}
+                        />
                       </TableCell>
                       <TableCell className="border border-gray-300 !text-center">
                         <div className="flex justify-center items-center">
@@ -158,22 +162,17 @@ const BlogList = () => {
           </Table>
         </TableContainer>
 
-        {
-          blogData?.totalPages > 1 && (
-            <div className="w-full flex items-center justify-end px-5 mt-5">
-              <Pagination count={10} />
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
-                component="div"
-                count={blogData?.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </div>
-          )
-        }
+        <div className="w-full flex items-center justify-end px-5 mt-5">
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 100]}
+            component="div"
+            count={blogData?.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </div>
       </div>
     </section>
   );

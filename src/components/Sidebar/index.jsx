@@ -1,6 +1,6 @@
 import { Button } from "@mui/material";
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { RxDashboard } from "react-icons/rx";
 import { FaRegImages } from "react-icons/fa";
 import { MdOutlineCategory } from "react-icons/md";
@@ -13,6 +13,7 @@ import { TbUsersGroup } from "react-icons/tb";
 import { FaAngleDown } from "react-icons/fa6";
 import { Collapse } from "react-collapse";
 import { myContext } from "../../App";
+import { fetchDataFromApi } from "../../utils/api";
 
 const Sidebar = () => {
   const [subMenuIndex, setSubMenuIndex] = useState(null);
@@ -27,6 +28,23 @@ const Sidebar = () => {
   };
 
   const context = useContext(myContext);
+  const history = useNavigate();
+
+  const logout = () => {
+    fetchDataFromApi(
+      `/api/user/logout?token=${localStorage.getItem("accessToken")}`,
+      { withCredentials: true }
+    ).then((res) => {
+      if (res?.error === false) {
+        context.setIsLogin(false);
+
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+
+        history("/login");
+      }
+    });
+  };
 
   return (
     <div
@@ -130,15 +148,18 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li className="w-full">
-                  <Button onClick={() =>
-                context.setIsOpenFullScreenPanel({
-                  open: true,
-                  model: "Thêm Danh Mục Cha",
-                })
-              } className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
-                    <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
-                    Thêm danh mục cha
-                  </Button>
+                <Button
+                  onClick={() =>
+                    context.setIsOpenFullScreenPanel({
+                      open: true,
+                      model: "Thêm Danh Mục Cha",
+                    })
+                  }
+                  className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case "
+                >
+                  <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
+                  Thêm danh mục cha
+                </Button>
               </li>
               <li className="w-full">
                 <Link to="/sub-category">
@@ -149,15 +170,18 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li className="w-full">
-                  <Button onClick={() =>
-                context.setIsOpenFullScreenPanel({
-                  open: true,
-                  model: "Thêm Danh Mục Con",
-                })
-              } className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
-                    <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
-                    Thêm danh mục con
-                  </Button>
+                <Button
+                  onClick={() =>
+                    context.setIsOpenFullScreenPanel({
+                      open: true,
+                      model: "Thêm Danh Mục Con",
+                    })
+                  }
+                  className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case "
+                >
+                  <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
+                  Thêm danh mục con
+                </Button>
               </li>
             </ul>
           </Collapse>
@@ -274,12 +298,15 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li className="w-full">
-                <Button onClick={() =>
+                <Button
+                  onClick={() =>
                     context.setIsOpenFullScreenPanel({
                       open: true,
                       model: "Thêm Bài Viết",
                     })
-                  } className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case ">
+                  }
+                  className="!text-black/70 flex gap-2 !justify-start !w-full !text-[13px] !font-[550] !normal-case "
+                >
                   <span className="block w-[5px] h-[5px] !min-w-[5px] rounded-full bg-black/30"></span>
                   Thêm bài viết
                 </Button>
@@ -298,12 +325,13 @@ const Sidebar = () => {
         </li>
 
         <li>
-          <Link to="/logout">
-            <Button className="w-full !py-2 !capitalize hover:bg-[#f1f1f1] !font-[600] flex !items-center gap-3 !text-black/70 !justify-start">
-              <IoMdLogOut className="!text-[20px]" />
-              <span className="!text-[14px]">Đăng xuất</span>
-            </Button>
-          </Link>
+          <Button
+            onClick={logout}
+            className="w-full !py-2 !capitalize hover:bg-[#f1f1f1] !font-[600] flex !items-center gap-3 !text-black/70 !justify-start"
+          >
+            <IoMdLogOut className="!text-[20px]" />
+            <span className="!text-[14px]">Đăng xuất</span>
+          </Button>
         </li>
       </ul>
     </div>
