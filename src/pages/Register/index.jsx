@@ -55,19 +55,19 @@ function Register() {
       return false;
     }
 
-    postData("/api/user/register", formFields).then((res) => {
+    postData("/api/admin/register", formFields).then((res) => {
       if (res?.error !== true) {
         setIsLoading(false);
         context.openAlertBox("success", res?.message);
         localStorage.setItem("userEmail", formFields.email);
-
+        
         setFormFields({
           name: "",
           email: "",
           password: "",
         });
-
-        history("/verify");
+        
+        history("/login");
       } else {
         context.openAlertBox("error", res?.message);
         setIsLoading(false);
@@ -189,7 +189,7 @@ function Register() {
             </Link>
           </p>
 
-          <div className="flex items-center my-5">
+          {/* <div className="flex items-center my-5">
             <div className="flex-1 h-[1px] bg-gray-300"></div>
             <span className="px-3 text-gray-400 text-sm">HOẶC</span>
             <div className="flex-1 h-[1px] bg-gray-300"></div>
@@ -198,7 +198,7 @@ function Register() {
           <Button className="gap-2 !mb-4 w-full !text-black/80 !font-[500] !bg-[#f1f1f1] flex items-center justify-center">
             <FcGoogle className="text-[20px]" />
             Đăng nhập với Google
-          </Button>
+          </Button> */}
         </form>
       </div>
     </section>

@@ -74,7 +74,7 @@ const Login = () => {
       return false;
     }
 
-    postData("/api/user/login", formFields, { withCredentials: true}).then((res) => {
+    postData("/api/admin/login", formFields, { withCredentials: true}).then((res) => {
       if (res?.error !== true) {
         setIsLoading(false);
         context.openAlertBox("success", res?.message);
@@ -201,7 +201,7 @@ const Login = () => {
             </Button>
           </div>
 
-          <div className="flex items-center my-5">
+          {/* <div className="flex items-center my-5">
             <div className="flex-1 h-[1px] bg-gray-300"></div>
             <span className="px-3 text-gray-400 text-sm">HOẶC</span>
             <div className="flex-1 h-[1px] bg-gray-300"></div>
@@ -210,7 +210,7 @@ const Login = () => {
           <Button className="gap-2 !mb-4 w-full !text-black/80 !font-[500] !bg-[#f1f1f1] flex items-center justify-center">
             <FcGoogle className="text-[20px]" />
             Đăng nhập với Google
-          </Button>
+          </Button> */}
 
           <p className="text-[14px] w-full font-[400] flex items-center justify-center gap-2">
             Bạn chưa có tài khoản?

@@ -68,6 +68,8 @@ const Header = () => {
 
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("actionType");
 
         history("/login");
       }
@@ -104,15 +106,22 @@ const Header = () => {
                   onClick={handleClickMyAccountAdmin}
                   className="!rounded-full overflow-hidden cursor-pointer !w-[35px] !h-[35px] !min-w-[35px]"
                 >
-                  <img
-                    src={context?.userData?.avatar}
-                    className="w-full h-full object-cover"
-                    style={{
-                      imageRendering: "auto",
-                      backfaceVisibility: "hidden",
-                      transform: "translate3d(0,0,0)",
-                    }}
-                  />
+                  {context?.userData?.avatar === "" ? (
+                          <img
+                            src="/user-avatar-default.png"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <img
+                            src={context?.userData?.avatar}
+                            className="w-full h-full object-cover"
+                            style={{
+                              imageRendering: "auto",
+                              backfaceVisibility: "hidden",
+                              transform: "translate3d(0,0,0)",
+                            }}
+                          />
+                        )}
                 </div>
 
                 <Menu
@@ -155,15 +164,22 @@ const Header = () => {
                   <MenuItem onClick={handleCloseMyAccountAdmin}>
                     <div className="flex items-center gap-3">
                       <div className="!rounded-full overflow-hidden cursor-pointer w-[35px] h-[35px] !min-w-[35px]">
-                        <img
-                          src={context?.userData?.avatar}
-                          className="w-full h-full object-cover"
-                          style={{
-                            imageRendering: "auto",
-                            backfaceVisibility: "hidden",
-                            transform: "translate3d(0,0,0)",
-                          }}
-                        />
+                        {context?.userData?.avatar === "" ? (
+                          <img
+                            src="/user-avatar-default.png"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <img
+                            src={context?.userData?.avatar}
+                            className="w-full h-full object-cover"
+                            style={{
+                              imageRendering: "auto",
+                              backfaceVisibility: "hidden",
+                              transform: "translate3d(0,0,0)",
+                            }}
+                          />
+                        )}
                       </div>
 
                       <div className="info">

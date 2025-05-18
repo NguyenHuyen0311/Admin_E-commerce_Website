@@ -315,14 +315,14 @@ const Sidebar = () => {
           </Collapse>
         </li>
 
-        <li>
+        {/* <li>
           <Link to="/logo">
             <Button className="w-full !py-2 !capitalize hover:bg-[#f1f1f1] !font-[600] flex !items-center gap-3 !text-black/70 !justify-start">
               <RiEdgeNewFill className="!text-[20px]" />
               <span className="!text-[14px]">Logo</span>
             </Button>
           </Link>
-        </li>
+        </li> */}
 
         <li>
           <Button
